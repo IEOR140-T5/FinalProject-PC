@@ -1,3 +1,4 @@
+package pc;
 import java.awt.*;
 import java.awt.event.*;
 import javax.swing.JPanel;
