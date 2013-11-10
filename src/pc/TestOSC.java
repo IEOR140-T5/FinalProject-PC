@@ -97,7 +97,7 @@ public class TestOSC extends JFrame {
 
 	public static void main(String[] args) {
 		TestOSC t = new TestOSC();
-		Tools.pause(100);
+		//Tools.pause(100);
 		// t.go();
 	}
 }
