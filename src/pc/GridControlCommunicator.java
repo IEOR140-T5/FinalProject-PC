@@ -3,7 +3,6 @@ package pc;
 import java.io.DataInputStream;
 import java.io.DataOutputStream;
 import java.io.IOException;
-
 import lejos.pc.comm.NXTCommFactory;
 import lejos.pc.comm.NXTConnector;
 
@@ -35,7 +34,6 @@ public class GridControlCommunicator {
 	 * 
 	 * @param name
 	 */
-
 	public void connect(String name) {
 		try {
 			connector.close();
@@ -127,6 +125,49 @@ public class GridControlCommunicator {
 		System.out.println("Communicator sending: FIX_POS");
 		try {
 			dataOut.writeInt(MessageType.FIX_POS.ordinal());
+			dataOut.flush();
+		} catch (IOException e) {
+			e.printStackTrace();
+		}
+	}
+	
+	/**
+	 * 
+	 */
+	public void sendPing() {
+		System.out.println(" Communicator sending: PING");
+		try {
+			dataOut.writeInt(MessageType.PING.ordinal());
+			dataOut.flush();
+		} catch (IOException e) {
+			e.printStackTrace();
+		}
+	}
+	
+	/**
+	 * 
+	 * @param dist
+	 */
+	public void sendTravel(float dist) {
+		System.out.println(" Communicator sending: TRAVEL");
+		try {
+			dataOut.writeInt(MessageType.TRAVEL.ordinal());
+			dataOut.writeFloat(dist);
+			dataOut.flush();
+		} catch (IOException e) {
+			e.printStackTrace();
+		}
+	}
+	
+	/**
+	 * 
+	 * @param angle
+	 */
+	public void sendRotate(float angle) {
+		System.out.println(" Communicator sending: ROTATE");
+		try {
+			dataOut.writeInt(MessageType.ROTATE.ordinal());
+			dataOut.writeFloat(angle);
 			dataOut.flush();
 		} catch (IOException e) {
 			e.printStackTrace();

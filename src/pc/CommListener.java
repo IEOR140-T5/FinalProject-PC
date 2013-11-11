@@ -1,4 +1,5 @@
 package pc;
+
 import java.awt.BorderLayout;
 import java.awt.EventQueue;
 import java.awt.GridLayout;
@@ -22,22 +23,17 @@ import java.awt.FlowLayout;
  * @author Corey Short, Phuoc Nguyen, Khoa Tran. 
  * Reference to Glassey OffScreenGrid.java and Milestone 5 sample GUI.
  */
-public class CommListener extends JFrame {
+public class CommListener extends JFrame implements GNC {
 
 	private JPanel contentPane;
-	private JTextField nameField, xTextField, yTextField, xTextField2, yTextField2; 
+	private JTextField nameField, xField, yField, xField2, yField2; 
 	private JTextField headingField, movingField, statusField, amountField;
 	private JLabel lblX, lblY, lbl2X, lbl2Y, lblAmount, lblHeading;
 	private JLabel lblData, lblPose, lblMoving, lblStatus;
 	private JButton stopButton, setPoseButton, gotoButton, map1Button, map2Button;
 	private JButton fixButton, travelButton, rotateButton, rotateToButton, pingButton;
 	private JButton connectButton;
-	
-	/**
-	 * provides communications services: sends and receives NXT data
-	 */
-	
-	//private Message communicator = new Message(this);
+	private GridControlCommunicator communicator = new GridControlCommunicator(this);
 	private OffScreenDrawing oSGrid = new OffScreenDrawing();
 	
 	/**
@@ -97,19 +93,19 @@ public class CommListener extends JFrame {
 		lblX.setBounds(245, 20, 15, 15);
 		connectPanel.add(lblX);
 
-		xTextField = new JTextField();
-		xTextField.setBounds(260, 20, 30, 15);
-		xTextField.setColumns(5);
-		connectPanel.add(xTextField);
+		xField = new JTextField();
+		xField.setBounds(260, 20, 30, 15);
+		xField.setColumns(5);
+		connectPanel.add(xField);
 
 		lblY = new JLabel("Y");
 		lblY.setBounds(300, 20, 15, 15);
 		connectPanel.add(lblY);
 
-		yTextField = new JTextField();
-		yTextField.setBounds(315, 20, 30, 15);
-		yTextField.setColumns(5);
-		connectPanel.add(yTextField);
+		yField = new JTextField();
+		yField.setBounds(315, 20, 30, 15);
+		yField.setColumns(5);
+		connectPanel.add(yField);
 		
 		lblAmount = new JLabel("Amount");
 		lblAmount.setBounds(360, 20, 50, 15);
@@ -128,19 +124,19 @@ public class CommListener extends JFrame {
 		lbl2X.setBounds(460, 20, 15, 15);
 		connectPanel.add(lbl2X);
 		
-		xTextField2 = new JTextField();
-		xTextField2.setBounds(475, 20, 30, 15);
-		xTextField2.setColumns(5);
-		connectPanel.add(xTextField2);
+		xField2 = new JTextField();
+		xField2.setBounds(475, 20, 30, 15);
+		xField2.setColumns(5);
+		connectPanel.add(xField2);
 		
 		lbl2Y = new JLabel("Y");
 		lbl2Y.setBounds(515, 20, 15, 15);
 		connectPanel.add(lbl2Y);
 		
-		yTextField2 = new JTextField();
-		yTextField2.setBounds(530, 20, 30, 15);
-		yTextField2.setColumns(5);
-		connectPanel.add(yTextField2);
+		yField2 = new JTextField();
+		yField2.setBounds(530, 20, 30, 15);
+		yField2.setColumns(5);
+		connectPanel.add(yField2);
 		
 		lblHeading = new JLabel("Heading");
 		lblHeading.setBounds(570, 20, 50, 15);
@@ -164,20 +160,20 @@ public class CommListener extends JFrame {
 		topPanel.add(enumPanel);
 
 		stopButton = new JButton("Stop");
-		stopButton.addActionListener(new SendButtonActionListener());
+		stopButton.addActionListener(new StopButtonActionListener());
 		enumPanel.setLayout(new FlowLayout(FlowLayout.CENTER, 5, 7));
 		enumPanel.add(stopButton);
 
 		setPoseButton = new JButton("Set Pose");
-		//setPoseButton.addActionListner(new SetPoseButtonActionListener());
+		setPoseButton.addActionListener(new SetPoseButtonActionListener());
 		enumPanel.add(setPoseButton);
 		
 		gotoButton = new JButton("GO TO");
-		//gotoButton.addActionListner(new GoToButtonActionListener());
+		gotoButton.addActionListener(new GoToButtonActionListener());
 		enumPanel.add(gotoButton);
 		
 		map1Button = new JButton("<map");
-		//map1Button.addActionListener(new Map1ButtonActionListner());
+		//map1Button.addActionListener(new Map1ButtonActionListener());
 		enumPanel.add(map1Button);
 		
 		map2Button = new JButton("map>");
@@ -185,15 +181,15 @@ public class CommListener extends JFrame {
 		enumPanel.add(map2Button);
 		
 		fixButton = new JButton("Fix");
-		//fixButton.addActionListener(new FixButtonActionListener());
+		fixButton.addActionListener(new FixButtonActionListener());
 		enumPanel.add(fixButton);
 		
 		travelButton = new JButton("Travel");
-		//travelButton.addActionListener(new TravelButtonActionListener());
+		travelButton.addActionListener(new TravelButtonActionListener());
 		enumPanel.add(travelButton);
 		
 		rotateButton = new JButton("Rotate");
-		//rotateButton.addActionListener(new RotateButtonActionListener());
+		rotateButton.addActionListener(new RotateButtonActionListener());
 		enumPanel.add(rotateButton);
 		
 		rotateToButton = new JButton("Rotate To");
@@ -201,7 +197,7 @@ public class CommListener extends JFrame {
 		enumPanel.add(rotateButton);
 		
 		pingButton = new JButton("Ping");
-		//pingButton.addActionListener(new PingButtonActionListener());
+		pingButton.addActionListener(new PingButtonActionListener());
 		enumPanel.add(pingButton);
 		
 		JPanel statusPanel = new JPanel();
@@ -217,45 +213,168 @@ public class CommListener extends JFrame {
 
 		contentPane.add(oSGrid, BorderLayout.CENTER);
 
-		oSGrid.textX = this.xTextField;
-		oSGrid.textY = this.yTextField;		
-		
+		oSGrid.textX = this.xField;
+		oSGrid.textY = this.yField;		
 	}
 
 	private class BtnConnectActionListener implements ActionListener {
 		public void actionPerformed(ActionEvent e) {
 			String name = nameField.getText();
-			//communicator.connect(name);
+			communicator.connect(name);
 			System.out.println("Connect to " + name);
 		}
 	}
 	
-	// set pose might look something like this.
-	private class SendButtonActionListener implements ActionListener {
+	private class GoToButtonActionListener implements ActionListener {
 		public void actionPerformed(ActionEvent event) {
-			System.out.println("send button");
-			int x = 0;
-			int y = 0;
-			try {
-				x = Integer.parseInt(xTextField.getText());
-				System.out.println(" get x " + x);
-			}
-			catch (Exception e) {
-				setInfo("Problem with X field");
-				return;
-			}
-			try {
-				y = Integer.parseInt(yTextField.getText());
-				System.out.println(" get y " + y);
-			}
-			catch (Exception e) {
-				setInfo("Problem with Y field");
-				return;
-			}
-			//communicator.send(x, y);
-			System.out.println("send " + x + " " + y);
-			repaint();
+			System.out.println("Send button pressed.");
+			sendMove();
 		}
+	}
+	
+	private class SetPoseButtonActionListener implements ActionListener {
+		public void actionPerformed(ActionEvent event) {
+			System.out.println("Set pose button pressed.");
+			sendSetPose();
+		}
+	}
+	
+	private class PingButtonActionListener implements ActionListener {
+		public void actionPerformed(ActionEvent event) {
+			System.out.println("Ping!");
+			sendPing();
+		}
+	}
+
+	private class StopButtonActionListener implements ActionListener {
+		public void actionPerformed(ActionEvent event) {
+			System.out.println("Stop button pressed.");
+			sendStop();
+		}
+	}
+	
+	private class TravelButtonActionListener implements ActionListener {
+		public void actionPerformed(ActionEvent event) {
+			System.out.println("Travel button pressed.");
+			sendTravel();
+		}
+	}
+	
+	private class RotateButtonActionListener implements ActionListener {
+		public void actionPerformed(ActionEvent event) {
+			System.out.println("Rotate button pressed.");
+			sendRotate();
+		}
+	}
+	
+	private class FixButtonActionListener implements ActionListener {
+		public void actionPerformed(ActionEvent event) {
+			System.out.println("Fix button pressed.");
+			sendFix();
+		}
+	}
+	
+	public void sendPing() {
+		communicator.sendPing();
+		repaint();
+	}
+	
+	public void sendMove() {
+		float x = 0;
+		float y = 0;
+		float heading = 0;
+
+		try {
+			x = Float.parseFloat(xField.getText());
+			System.out.println(" get x " + x);
+		} catch (Exception e) {
+			setMessage("Problem with X field");
+			return;
+		}
+
+		try {
+			y = Float.parseFloat(yField.getText());
+			System.out.println(" get y " + y);
+		} catch (Exception e) {
+			setMessage("Problem  with Y field");
+			return;
+		}
+
+		communicator.sendDestination(x, y);
+		repaint();
+	}
+
+	public void sendSetPose() {
+		float x = 0;
+		float y = 0;
+		float heading = 0;
+		
+		try {
+			x = Float.parseFloat(xField.getText());
+			System.out.println(" get x " + x);
+		} catch (Exception e) {
+			setMessage("Problem with X field");
+			return;
+		}
+
+		try {
+			y = Float.parseFloat(yField.getText());
+			System.out.println(" get y " + y);
+		} catch (Exception e) {
+			setMessage("Problem  with Y field");
+			return;
+		}
+		
+		try {
+			heading = Float.parseFloat(headingField.getText());
+			System.out.println(" get heading " + heading);
+		} catch (Exception e) {
+			setMessage("Problem  with Heading field");
+			return;
+		}
+		
+		communicator.sendSetPose(x, y, heading);
+		repaint();
+	}
+	
+	public void sendStop() {
+		communicator.sendStop();
+		repaint();
+	}
+	
+	public void sendFix() {
+		communicator.sendFix();
+		repaint();
+	}
+	
+	public void sendTravel() {
+		float dist = 0;
+		
+		try {
+			//dist = Float.parseFloat(distField.getText());
+			System.out.println(" get dist " + dist);
+		} catch (Exception e) {
+			setMessage("Problem with travel field");
+			return;
+		}
+		
+		communicator.sendTravel(dist);
+		repaint();
+	}
+	
+	public void sendRotate() {
+		float angle = 0;
+		
+		try {
+			angle = Float.parseFloat(amountField.getText());
+			System.out.println(" get angle " + angle);
+		} catch (Exception e) {
+			setMessage("Problem with Angle Field");
+			return;
+		}
+		
+		communicator.sendRotate(angle);
+		repaint();
 	}
 
 	public void setInfo(String message) {
@@ -274,4 +393,3 @@ public class CommListener extends JFrame {
 		oSGrid.drawObstacle(x, y);
 	}
 }
-
