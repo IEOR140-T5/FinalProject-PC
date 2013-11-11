@@ -14,8 +14,6 @@ import javax.swing.border.EmptyBorder;
 import java.awt.Font;
 import java.awt.FlowLayout;
 
-
-
 /**
  * GUI to draw robot path and current location of the robot. Uses mouse to
  * enter x,y coordinates and transmits commands from the GUI to the robot.
