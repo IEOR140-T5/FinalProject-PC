@@ -5,12 +5,14 @@ import java.awt.GridLayout;
 import java.awt.Rectangle;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
+
 import javax.swing.JButton;
 import javax.swing.JFrame;
 import javax.swing.JLabel;
 import javax.swing.JPanel;
 import javax.swing.JTextField;
 import javax.swing.border.EmptyBorder;
+
 import java.awt.Font;
 import java.awt.FlowLayout;
 
@@ -61,7 +63,7 @@ public class CommListener extends JFrame {
 	public CommListener() {
 		setTitle("Mission Control");
 		setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
-		setBounds(100, 100, 800, 650);
+		setBounds(20, 20, 1000, 700);
 		
 		contentPane = new JPanel();
 		contentPane.setBorder(new EmptyBorder(5, 5, 5, 5));
@@ -69,15 +71,15 @@ public class CommListener extends JFrame {
 		setContentPane(contentPane);
 
 		JPanel topPanel = new JPanel();
-		topPanel.setBounds(new Rectangle(0, 0, 200, 50));
+		topPanel.setBounds(new Rectangle(0, 0, 240, 480));
 		contentPane.add(topPanel, BorderLayout.NORTH);
 		topPanel.setLayout(new GridLayout(3, 1, 0, 0));
 
 		JPanel connectPanel = new JPanel();
 		topPanel.add(connectPanel);
 		
-		connectButton = new JButton("connect to");
-		connectButton.setBounds(15, 5, 95, 25);
+		connectButton = new JButton("connect");
+		connectButton.setBounds(15, 5, 100, 25);
 		connectButton.addActionListener(new BtnConnectActionListener());
 		connectPanel.setLayout(null);
 		connectPanel.add(connectButton);
@@ -88,7 +90,7 @@ public class CommListener extends JFrame {
 		connectPanel.add(nameField);
 		
 		lblData = new JLabel("Data");
-		lblData.setBounds(245, 0, 30, 15);
+		lblData.setBounds(245, 0, 60, 15);
 		connectPanel.add(lblData);
 
 		lblX = new JLabel("X");
@@ -119,7 +121,7 @@ public class CommListener extends JFrame {
 		connectPanel.add(amountField);
 		
 		lblPose = new JLabel("Pose");
-		lblPose.setBounds(460, 0, 30, 15);
+		lblPose.setBounds(460, 0, 60, 15);
 		connectPanel.add(lblPose);
 		
 		lbl2X = new JLabel("X");
@@ -167,7 +169,7 @@ public class CommListener extends JFrame {
 		enumPanel.add(stopButton);
 
 		setPoseButton = new JButton("Set Pose");
-		//setPoseButton.addActionListner(new SetPoseButtonActionLIstner());
+		//setPoseButton.addActionListner(new SetPoseButtonActionListener());
 		enumPanel.add(setPoseButton);
 		
 		gotoButton = new JButton("GO TO");
@@ -211,7 +213,7 @@ public class CommListener extends JFrame {
 
 		statusField = new JTextField();
 		statusPanel.add(statusField);
-		statusField.setColumns(35);
+		statusField.setColumns(40);
 
 		contentPane.add(oSGrid, BorderLayout.CENTER);
 
@@ -260,31 +262,16 @@ public class CommListener extends JFrame {
 		statusField.setText(message);
 	}
 
-	public void incomingMessage(int header, int x, int y) {
-		if (header == 0) {
-			oSGrid.drawRobotPath(x, y);
-			System.out.println("Drawing robot path to " + x + " " + y);
-		}
-		if (header == 1) {
-			oSGrid.drawObstacle(x, y);
-			System.out.println("Drawing obstacle path to " + x + " " + y);
-		}
-		System.out.println("HAHAHAHAHA YOU FOOL");
-	}
-
-	
 	public void setMessage(String message) {
 		statusField.setText(message);
 	}
 
-
-	public void drawRobotPath(int x, int y) {
-		incomingMessage(0, x, y);
+	public void drawRobotPath(int x, int y, int heading) {
+		oSGrid.drawRobotPath(x, y, heading);
 	}
 
-
 	public void drawObstacle(int x, int y) {
-		incomingMessage(1, x, y);
+		oSGrid.drawObstacle(x, y);
 	}
 }
 
