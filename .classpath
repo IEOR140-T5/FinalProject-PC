@@ -1,16 +1,10 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <classpath>
+	<classpathentry excluding="src/" kind="src" path=""/>
 	<classpathentry kind="src" path="src"/>
 	<classpathentry kind="con" path="org.eclipse.jdt.launching.JRE_CONTAINER"/>
-<<<<<<< HEAD
-	<classpathentry kind="lib" path="C:/Program Files (x86)/leJOS NXJ/lib/pc/pctools.jar"/>
-	<classpathentry kind="lib" path="C:/Program Files (x86)/leJOS NXJ/lib/pc/pccomm.jar"/>
-	<classpathentry kind="lib" path="C:/Program Files (x86)/leJOS NXJ/lib/pc/3rdparty/bluecove.jar"/>
-=======
-	<classpathentry kind="lib" path="libs/bluecove-2.1.0.jar"/>
-	<classpathentry kind="lib" path="libs/pccomm.jar"/>
-	<classpathentry kind="lib" path="libs/pctools.jar"/>
-	<classpathentry kind="lib" path="/home/khoatran/work/ieor140f13/FinalProject-PC/libs/classes.jar"/>
->>>>>>> 67014934b1c571193dcbb9bb3771aac90cab1717
-	<classpathentry kind="output" path="src"/>
+	<classpathentry kind="lib" path="/home/khoatran/work/ieor140f13/FinalProject-PC/libs/bluecove-2.1.0.jar"/>
+	<classpathentry kind="lib" path="/home/khoatran/work/ieor140f13/FinalProject-PC/libs/pccomm.jar"/>
+	<classpathentry kind="lib" path="/home/khoatran/work/ieor140f13/FinalProject-PC/libs/pctools.jar"/>
+	<classpathentry kind="output" path="bin"/>
 </classpath>
