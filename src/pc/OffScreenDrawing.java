@@ -1,8 +1,8 @@
 package pc;
 
 import java.awt.*;
+import javax.swing.JPanel;
 import javax.swing.JTextField;
-import java.awt.event.*;
 
 /*
  * OffScreenGrid.java ; manages drawing of grid and robot path on an Image 
@@ -11,7 +11,7 @@ import java.awt.event.*;
  * updated 10/13   2011
  * @author  Roger
  */
-public class OffScreenDrawing extends javax.swing.JPanel
+public class OffScreenDrawing extends JPanel
 {
 
 	/** Creates new form OffScreenGrid */
@@ -63,35 +63,26 @@ public class OffScreenDrawing extends javax.swing.JPanel
 	/**
 	 *draws the grid with labels; draw robot at 0,0
 	 */
-	public void drawGrid()
-	{
-		if(offScreenImage == null)makeImage();
-		int xmin = -240;
-		int xmax = 240;
-		int xSpacing = 30;
-		int ymax = 240;
-		int ySpacing = 30;
-		osGraphics.setColor(Color.green); // Set the line color
-		for (int y = 0; y <= ymax; y += ySpacing)
-		{
-			osGraphics.drawLine(xpixel(xmin), ypixel(y), xpixel(xmax), ypixel(y));//horizontal lines
-		}
-		for (int x = xmin; x <= xmax; x += xSpacing)
-		{
-			osGraphics.drawLine(xpixel(x), ypixel(0), xpixel(x), ypixel(ymax));// vertical lines
-		}
-		osGraphics.setColor(Color.black); //set number color 	
-		for (int y = 0; y <= ymax; y += ySpacing) // number the  y axis
-		{
-			osGraphics.drawString(y + "", xpixel(-0.5f), ypixel(y));
-		}
-		for (int x = 0; x <= xmax; x +=  xSpacing) // number the x axis
-		{
-			osGraphics.drawString(x + "", xpixel(x), ypixel(-0.5f));
-		}
-		drawRobotPath(0, 0, 0);
-
+	public void drawGrid() {
+	int xmax = 8; 
+	int ymax = 4;
+	int numX = -4;
+	osGraphics.setColor(Color.green);	    // Set the line color for the graph
+	for (int y = 0; y <= ymax; y++)
+		 osGraphics.drawLine(xpixel(0),ypixel(y),xpixel(xmax),ypixel(y)); //horizontal
+																		  //lines
+	for (int x = 0; x <= xmax; x++)
+		osGraphics.drawLine(xpixel(x),ypixel(0),xpixel(x),ypixel(ymax)); // vertical
+																		 // lines
+	osGraphics.setColor(Color.black);	    // set number color 	
+	for(int y = 0; y <= ymax; y++)		    // number the  y axis
+		osGraphics.drawString(y * 60 + "", xpixel(-0.3f), ypixel(y)); 
+	for (int x = 0; x <= xmax; x++) {		// number the x axis
+		osGraphics.drawString(numX * 60 + "", xpixel(x), ypixel(-0.2f));
+		numX++;
 	}
+	drawRobotPath(0,0, 0);
+}
 
 	/**
 	 *clear the screen and draw a new grid
@@ -284,11 +275,11 @@ public class OffScreenDrawing extends javax.swing.JPanel
 	/**
 	 * line spacing in  pixels
 	 */
-	public final int gridSpacing = 2;
+	public final int gridSpacing = 85;
 	/**
 	 * origin in pixels from corner of drawing area
 	 */
-	public final int xOrigin = 600;
+	public final int xOrigin = 50;
 	/**
 	 *robot position ; used by checkContinuity, drawRobotPath
 	 */
