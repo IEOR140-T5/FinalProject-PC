@@ -81,7 +81,7 @@ public class OffScreenDrawing extends JPanel
 		osGraphics.drawString(numX * 60 + "", xpixel(x), ypixel(-0.2f));
 		numX++;
 	}
-	drawRobotPath(0,0, 0);
+	drawRobotPath(0,0,0);
 }
 
 	/**
@@ -177,7 +177,7 @@ public class OffScreenDrawing extends JPanel
 		}
 
 		osGraphics.setColor(c);
-		osGraphics.fillPolygon(poseTriangle);
+		osGraphics.drawPolygon(poseTriangle);
 	}
 
 	public int abs(int a)

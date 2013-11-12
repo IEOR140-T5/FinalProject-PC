@@ -161,7 +161,7 @@ public class CommListener extends JFrame implements GNC {
 
 		stopButton = new JButton("Stop");
 		stopButton.addActionListener(new StopButtonActionListener());
-		enumPanel.setLayout(new FlowLayout(FlowLayout.CENTER, 5, 7));
+		enumPanel.setLayout(new FlowLayout(FlowLayout.CENTER, 5, 5));
 		enumPanel.add(stopButton);
 
 		setPoseButton = new JButton("Set Pose");
@@ -194,7 +194,7 @@ public class CommListener extends JFrame implements GNC {
 		
 		rotateToButton = new JButton("Rotate To");
 		//rotateToButton.addActionListener(new RotateToButtonActionListener());
-		enumPanel.add(rotateButton);
+		enumPanel.add(rotateToButton);
 		
 		pingButton = new JButton("Ping");
 		pingButton.addActionListener(new PingButtonActionListener());
