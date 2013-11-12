@@ -64,24 +64,31 @@ public class OffScreenDrawing extends JPanel
 	 *draws the grid with labels; draw robot at 0,0
 	 */
 	public void drawGrid() {
-	int xmax = 8; 
-	int ymax = 4;
-	int numX = -4;
-	osGraphics.setColor(Color.green);	    // Set the line color for the graph
-	for (int y = 0; y <= ymax; y++)
-		 osGraphics.drawLine(xpixel(0),ypixel(y),xpixel(xmax),ypixel(y)); //horizontal
-																		  //lines
-	for (int x = 0; x <= xmax; x++)
-		osGraphics.drawLine(xpixel(x),ypixel(0),xpixel(x),ypixel(ymax)); // vertical
-																		 // lines
-	osGraphics.setColor(Color.black);	    // set number color 	
-	for(int y = 0; y <= ymax; y++)		    // number the  y axis
-		osGraphics.drawString(y * 60 + "", xpixel(-0.3f), ypixel(y)); 
-	for (int x = 0; x <= xmax; x++) {		// number the x axis
-		osGraphics.drawString(numX * 60 + "", xpixel(x), ypixel(-0.2f));
-		numX++;
-	}
-	drawRobotPath(0,0,0);
+		int xmin = -240;
+		int xmax = 240;
+		int xSpacing = 60;
+		int ymax = 240;
+		int ySpacing = 60;
+		osGraphics.setColor(Color.green); // Set the line color
+		for (int y = 0; y <= ymax; y += ySpacing)
+		{
+			osGraphics.drawLine(xpixel(xmin), ypixel(y), xpixel(xmax), ypixel(y));//horizontal lines
+		}
+		for (int x = xmin; x <= xmax; x += xSpacing)
+		{
+			osGraphics.drawLine(xpixel(x), ypixel(0), xpixel(x), ypixel(ymax));// vertical lines
+		}
+		osGraphics.setColor(Color.black); //set number color 	
+		for (int y = 0; y <= ymax; y += ySpacing) // number the  y axis
+		{
+			osGraphics.drawString(y + "", xpixel(-251f), ypixel(y) + 4);
+		}
+		for (int x = xmin; x <= xmax; x +=  xSpacing) // number the x axis
+		{
+			osGraphics.drawString(x + "", xpixel(x) - 4, ypixel(-8f));
+		}
+		drawRobotPath(0, 0, 0);
+
 }
 
 	/**
@@ -275,11 +282,11 @@ public class OffScreenDrawing extends JPanel
 	/**
 	 * line spacing in  pixels
 	 */
-	public final int gridSpacing = 85;
+	public final int gridSpacing = 2;
 	/**
 	 * origin in pixels from corner of drawing area
 	 */
-	public final int xOrigin = 50;
+	public final int xOrigin = 550;
 	/**
 	 *robot position ; used by checkContinuity, drawRobotPath
 	 */

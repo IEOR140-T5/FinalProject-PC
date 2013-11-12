@@ -59,7 +59,7 @@ public class CommListener extends JFrame implements GNC {
 	public CommListener() {
 		setTitle("Mission Control");
 		setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
-		setBounds(20, 20, 1000, 700);
+		setBounds(20, 20, 1200, 800);
 		
 		contentPane = new JPanel();
 		contentPane.setBorder(new EmptyBorder(5, 5, 5, 5));
