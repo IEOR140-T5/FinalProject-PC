@@ -33,6 +33,7 @@ public class CommListener extends JFrame implements GNC {
 	private JButton stopButton, setPoseButton, gotoButton, map1Button, map2Button;
 	private JButton fixButton, travelButton, rotateButton, rotateToButton, pingButton;
 	private JButton connectButton;
+	
 	private GridControlCommunicator communicator = new GridControlCommunicator(this);
 	private OffScreenDrawing oSGrid = new OffScreenDrawing();
 	
@@ -220,8 +221,8 @@ public class CommListener extends JFrame implements GNC {
 	private class BtnConnectActionListener implements ActionListener {
 		public void actionPerformed(ActionEvent e) {
 			String name = nameField.getText();
+			System.out.println("* Trying to connect to " + name);
 			communicator.connect(name);
-			System.out.println("Connect to " + name);
 		}
 	}
 	

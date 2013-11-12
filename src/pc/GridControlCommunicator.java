@@ -3,8 +3,7 @@ package pc;
 import java.io.DataInputStream;
 import java.io.DataOutputStream;
 import java.io.IOException;
-import lejos.pc.comm.NXTCommFactory;
-import lejos.pc.comm.NXTConnector;
+import lejos.pc.comm.*;
 
 /**
  * Communicator on the PC(GUI) side
@@ -14,7 +13,7 @@ public class GridControlCommunicator {
 	/**
 	 * Instance variables
 	 */
-	GNC control; // call back reference; calls setMessage, dreawRobotPositin, drasObstacle;
+	CommListener control; // call back reference; calls setMessage, dreawRobotPositin, drasObstacle;
 	private NXTConnector connector = new NXTConnector(); // connects to NXT using bluetooth
 	private DataInputStream dataIn;
 	private DataOutputStream dataOut;
@@ -24,7 +23,7 @@ public class GridControlCommunicator {
 	 * Constructor for Communicator on the PC side
 	 * @param control - the GNC interface object
 	 */
-	public GridControlCommunicator(GNC control) {
+	public GridControlCommunicator(CommListener control) {
 		this.control = control; // callback path
 		System.out.println("GridControlCom1 built");
 	}
