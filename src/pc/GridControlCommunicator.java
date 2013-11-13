@@ -112,6 +112,7 @@ public class GridControlCommunicator {
 			dataOut.flush();
 			dataOut.writeFloat(heading);
 			dataOut.flush();
+			System.out.println("should set pose");
 		} catch (IOException ioe) {
 			ioe.printStackTrace();
 		}
@@ -131,7 +132,7 @@ public class GridControlCommunicator {
 	}
 	
 	/**
-	 * 
+	 * Sends a ping to the NXT.
 	 */
 	public void sendPing() {
 		System.out.println(" Communicator sending: PING");
@@ -144,8 +145,8 @@ public class GridControlCommunicator {
 	}
 	
 	/**
-	 * 
-	 * @param dist
+	 * Sends a distance to travel to the NXT.
+	 * @param dist - distance to travel
 	 */
 	public void sendTravel(float dist) {
 		System.out.println(" Communicator sending: TRAVEL");
@@ -159,8 +160,8 @@ public class GridControlCommunicator {
 	}
 	
 	/**
-	 * 
-	 * @param angle
+	 * Sends an amount to rotate to the NXT.
+	 * @param angle - amount to rotate
 	 */
 	public void sendRotate(float angle) {
 		System.out.println(" Communicator sending: ROTATE");

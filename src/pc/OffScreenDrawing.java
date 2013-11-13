@@ -66,9 +66,9 @@ public class OffScreenDrawing extends JPanel
 	public void drawGrid() {
 		int xmin = -240;
 		int xmax = 240;
-		int xSpacing = 60;
+		int xSpacing = 30;
 		int ymax = 240;
-		int ySpacing = 60;
+		int ySpacing = 30;
 		osGraphics.setColor(Color.green); // Set the line color
 		for (int y = 0; y <= ymax; y += ySpacing)
 		{
