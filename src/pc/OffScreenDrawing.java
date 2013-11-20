@@ -4,27 +4,22 @@ import java.awt.*;
 import javax.swing.JPanel;
 import javax.swing.JTextField;
 
-/*
- * OffScreenGrid.java ; manages drawing of grid and robot path on an Image 
- * which is displayed when  repaint() is called. 
- * Mouse listener used    
- * updated 10/13   2011
- * @author  Roger
+/**
+ * OffScreenDrawing draws the grid for the CommListener GUI
+ * @author Corey Short, Phuc Nguyen, Khoa Tran
+ *
  */
-public class OffScreenDrawing extends JPanel
-{
+public class OffScreenDrawing extends JPanel {
 
 	/** Creates new form OffScreenGrid */
-	public OffScreenDrawing()
-	{
+	public OffScreenDrawing() {
 		initComponents();
-		setBackground(Color.white);
+		setBackground(Color.black);
 		System.out.println(" OffScreen Drawing constructor ");
 		//		makeImage();
 	}
 
-	public void paintComponent(Graphics g)
-	{
+	public void paintComponent(Graphics g) {
 		super.paintComponent(g);
 		if (offScreenImage == null)
 		{
@@ -36,8 +31,7 @@ public class OffScreenDrawing extends JPanel
 	/**
 	 * Create the offScreenImage, 
 	 */
-	public void makeImage()
-	{
+	public void makeImage() {
 		System.out.println("OffScreenGrid  makeImage() called");
 		imageWidth = getSize().width;// size from the panel
 		imageHeight = getSize().height;
@@ -69,16 +63,35 @@ public class OffScreenDrawing extends JPanel
 		int xSpacing = 30;
 		int ymax = 240;
 		int ySpacing = 30;
+		int count = 0;
 		osGraphics.setColor(Color.green); // Set the line color
 		for (int y = 0; y <= ymax; y += ySpacing)
 		{
+			if (count == 1) {
+				y = 12;
+				osGraphics.drawLine(xpixel(xmin), ypixel(y), xpixel(xmax), ypixel(y));
+				osGraphics.setColor(Color.white);
+				osGraphics.drawString(y + "", xpixel(-251f), ypixel(y) + 4);
+				osGraphics.setColor(Color.green);
+			}
+			if (count == 8) {
+				osGraphics.setColor(Color.red);
+				BasicStroke dashed = new BasicStroke(3, BasicStroke.CAP_BUTT,
+										BasicStroke .JOIN_BEVEL, 0, new float[]{9}, 0);
+				osGraphics.setStroke(dashed);
+				osGraphics.drawLine(xpixel(xmin), ypixel(y+10), xpixel(xmax), ypixel(y+10));
+				osGraphics.setColor(Color.green);
+				osGraphics.setStroke(new BasicStroke());
+				
+			}
 			osGraphics.drawLine(xpixel(xmin), ypixel(y), xpixel(xmax), ypixel(y));//horizontal lines
+			count++;
 		}
 		for (int x = xmin; x <= xmax; x += xSpacing)
 		{
 			osGraphics.drawLine(xpixel(x), ypixel(0), xpixel(x), ypixel(ymax));// vertical lines
 		}
-		osGraphics.setColor(Color.black); //set number color 	
+		osGraphics.setColor(Color.white); //set number color 	
 		for (int y = 0; y <= ymax; y += ySpacing) // number the  y axis
 		{
 			osGraphics.drawString(y + "", xpixel(-251f), ypixel(y) + 4);
@@ -94,8 +107,7 @@ public class OffScreenDrawing extends JPanel
 	/**
 	 *clear the screen and draw a new grid
 	 */
-	public void clear()
-	{
+	public void clear() {
 		System.out.println(" clear called ");
 		osGraphics.setColor(getBackground());
 		osGraphics.fillRect(0, 0, imageWidth, imageHeight);// clear the image
@@ -106,8 +118,7 @@ public class OffScreenDrawing extends JPanel
 	/**
 	 *Obstacles shown as magenta dot
 	 */
-	public void drawObstacle(int x, int y)
-	{
+	public void drawObstacle(int x, int y) {
 		x = xpixel(x); // coordinates of intersection
 		y = ypixel(y);
 		block = true;
@@ -116,8 +127,7 @@ public class OffScreenDrawing extends JPanel
 		repaint();
 	}
 
-	public void drawDest(int x, int y)
-	{
+	public void drawDest(int x, int y) {
 		x = xpixel(x); // coordinates of intersection
 		y = ypixel(y);
 		osGraphics.setColor(Color.blue);
@@ -144,8 +154,7 @@ public class OffScreenDrawing extends JPanel
 	/**
 	 * clear the old robot position, arg pixels
 	 */
-	private void clearSpot(int x, int y, Color c)
-	{
+	private void clearSpot(int x, int y, Color c) {
 		System.out.println("clear spot ");
 		if(osGraphics == null)System.out.println("null osGraphics");
 		osGraphics.setColor(Color.white);
@@ -172,7 +181,8 @@ public class OffScreenDrawing extends JPanel
 
 			if (i == 0) {
 				radius = 10;
-			} else {
+			}
+			else {
 				radius = 6;
 			}
 			newX = x + (int) (radius * Math.cos(Math.toRadians(heading + (120 * i))));
@@ -183,34 +193,29 @@ public class OffScreenDrawing extends JPanel
 			System.out.println("Point " + i + ": (" + newX + "," + newY + ")");
 		}
 
-		osGraphics.setColor(c);
+		osGraphics.setColor(Color.orange);
 		osGraphics.drawPolygon(poseTriangle);
 	}
 
-	public int abs(int a)
-	{
+	public int abs(int a) {
 		return (a < 0 ? (-a) : (a));
 	}
 
 	/**
 	 *convert grid coordinates to pixels
 	 */
-	private int xpixel(float x)
-	{
+	private int xpixel(float x) {
 		return xOrigin + (int) (x * gridSpacing);
 	}
 
-	private int gridX(int xpix)
-	{
+	private int gridX(int xpix) {
 		float x = (xpix - xOrigin)/(1.0f*gridSpacing);
 		return Math.round(x);
 	}
-	private int ypixel(float y)
-	{
+	private int ypixel(float y) {
 		return yOrigin - (int) (y * gridSpacing);
 	}
-	private int gridY(int ypix)
-	{
+	private int gridY(int ypix) {
 		float y = (yOrigin - ypix)/(1.0f*gridSpacing);
 		return Math.round(y);
 	}

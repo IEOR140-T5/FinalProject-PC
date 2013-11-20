@@ -31,8 +31,8 @@ public class CommListener extends JFrame implements GNC {
 	private JLabel lblX, lblY, lbl2X, lbl2Y, lblAngle, lblHeading;
 	private JLabel lblData, lblPose, lblMoving, lblStatus;
 	private JButton stopButton, setPoseButton, gotoButton, map1Button, map2Button;
-	private JButton fixButton, travelButton, rotateButton, rotateToButton, pingButton;
-	private JButton connectButton;
+	private JButton fixButton, travelButton, rotateButton, rotateToButton, echoButton;
+	private JButton connectButton, scannerRotateButton;
 	
 	private GridControlCommunicator communicator = new GridControlCommunicator(this);
 	private OffScreenDrawing oSGrid = new OffScreenDrawing();
@@ -173,12 +173,12 @@ public class CommListener extends JFrame implements GNC {
 		gotoButton.addActionListener(new GoToButtonActionListener());
 		enumPanel.add(gotoButton);
 		
-		map1Button = new JButton("<map");
-		//map1Button.addActionListener(new Map1ButtonActionListener());
+		map1Button = new JButton("map left");
+		map1Button.addActionListener(new MapLeftButtonActionListener());
 		enumPanel.add(map1Button);
 		
-		map2Button = new JButton("map>");
-		//map2Button.addActionListener(new Map2ButtonActionListener());
+		map2Button = new JButton("map right");
+		map2Button.addActionListener(new MapRightButtonActionListener());
 		enumPanel.add(map2Button);
 		
 		fixButton = new JButton("Fix");
@@ -197,9 +197,13 @@ public class CommListener extends JFrame implements GNC {
 		rotateToButton.addActionListener(new RotateToButtonActionListener());
 		enumPanel.add(rotateToButton);
 		
-		pingButton = new JButton("Ping");
-		pingButton.addActionListener(new PingButtonActionListener());
-		enumPanel.add(pingButton);
+		echoButton = new JButton("Get echo distance");
+		echoButton.addActionListener(new EchoButtonActionListener());
+		enumPanel.add(echoButton);
+		
+		scannerRotateButton = new JButton("Scanner rotate");
+		scannerRotateButton.addActionListener(new ScannerRotateButtonActionListener());
+		enumPanel.add(scannerRotateButton);
 		
 		JPanel statusPanel = new JPanel();
 		topPanel.add(statusPanel);
@@ -256,14 +260,14 @@ public class CommListener extends JFrame implements GNC {
 	}
 	
 	/**
-	 * ActionListener that sends a ping to the nxt.
+	 * ActionListener that gets the echo distance to an object.
 	 * @author Short
 	 *
 	 */
-	private class PingButtonActionListener implements ActionListener {
+	private class EchoButtonActionListener implements ActionListener {
 		public void actionPerformed(ActionEvent event) {
-			System.out.println("Ping!");
-			sendPing();
+			System.out.println("Echo button pressed.");
+			sendEcho();
 		}
 	}
 	
@@ -328,10 +332,41 @@ public class CommListener extends JFrame implements GNC {
 	}
 	
 	/**
-	 * Sends a ping to the communicator.
+	 * ActionListener that rotates scanner 90 degrees and draws a map of objects detected on GUI.
 	 */
-	public void sendPing() {
-		communicator.sendPing();
+	private class MapLeftButtonActionListener implements ActionListener {
+		public void actionPerformed(ActionEvent event) {
+			System.out.println("Map left button pressed.");
+			sendMapLeft();
+		}
+	}
+	
+	/**
+	 * ActionListener that rotates scanner -90 degrees and draws a map of objects detected on GUI.
+	 */
+	private class MapRightButtonActionListener implements ActionListener {
+		public void actionPerformed(ActionEvent event) {
+			System.out.println("Map right button pressed.");
+			sendMapRight();
+		}
+	}
+	
+	/**
+	 * ActionListener that rotates only the scanner an amount. Is used by the echoButton.
+	 */
+	private class ScannerRotateButtonActionListener implements ActionListener {
+		public void actionPerformed(ActionEvent event) {
+			System.out.println("Scanner rotate button pressed.");
+		//	sendScannerRotate();
+		}
+	}
+	
+	
+	/**
+	 * Sends a ping to the communicator to get an echo distance.
+	 */
+	public void sendEcho() {
+		communicator.sendEcho();
 		repaint();
 	}
 	
@@ -415,6 +450,58 @@ public class CommListener extends JFrame implements GNC {
 	}
 	
 	/**
+	 * sends the communicator the map left instruction
+	 */
+	public void sendMapLeft() {
+		float x = 0;
+		float y = 0;
+
+		try {
+			x = Float.parseFloat(xField.getText());
+			System.out.println(" get x " + x);
+		} catch (Exception e) {
+			setMessage("Problem with X field");
+			return;
+		}
+
+		try {
+			y = Float.parseFloat(yField.getText());
+			System.out.println(" get y " + y);
+		} catch (Exception e) {
+			setMessage("Problem  with Y field");
+			return;
+		}
+		communicator.sendMapLeft(x, y);
+		repaint();
+	}
+	
+	/**
+	 * sends the communicator the map right instruction
+	 */
+	public void sendMapRight() {
+		float x = 0;
+		float y = 0;
+
+		try {
+			x = Float.parseFloat(xField.getText());
+			System.out.println(" get x " + x);
+		} catch (Exception e) {
+			setMessage("Problem with X field");
+			return;
+		}
+
+		try {
+			y = Float.parseFloat(yField.getText());
+			System.out.println(" get y " + y);
+		} catch (Exception e) {
+			setMessage("Problem  with Y field");
+			return;
+		}
+		communicator.sendMapRight(x, y);
+		repaint();
+	}
+	
+	/**
 	 * sends the communicator the distance to travel.
 	 */
 	public void sendTravel() {
@@ -481,5 +568,8 @@ public class CommListener extends JFrame implements GNC {
 
 	public void drawObstacle(int x, int y) {
 		oSGrid.drawObstacle(x, y);
+	}
+	public void drawWall(int x, int y) {
+	//	oSGrid.drawWall(x, y);
 	}
 }

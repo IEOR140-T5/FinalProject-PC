@@ -112,7 +112,6 @@ public class GridControlCommunicator {
 			dataOut.flush();
 			dataOut.writeFloat(heading);
 			dataOut.flush();
-			System.out.println("should set pose");
 		} catch (IOException ioe) {
 			ioe.printStackTrace();
 		}
@@ -134,10 +133,10 @@ public class GridControlCommunicator {
 	/**
 	 * Sends a ping to the NXT.
 	 */
-	public void sendPing() {
-		System.out.println(" Communicator sending: PING");
+	public void sendEcho() {
+		System.out.println(" Communicator sending: ECHO");
 		try {
-			dataOut.writeInt(MessageType.PING.ordinal());
+			dataOut.writeInt(MessageType.ECHO.ordinal());
 			dataOut.flush();
 		} catch (IOException e) {
 			e.printStackTrace();
@@ -173,6 +172,41 @@ public class GridControlCommunicator {
 			e.printStackTrace();
 		}
 	}
+	
+	/**
+	 * Sends an x and y as a travel distance to goto. 
+	 */
+	public void sendMapLeft(float x, float y) {
+		System.out.println("Communicator sending: MAP LEFT TO " + x + ", " + y);
+		try {
+			dataOut.writeInt(MessageType.MAP.ordinal());
+			dataOut.flush();
+			dataOut.writeFloat(x);
+			dataOut.flush();
+			dataOut.writeFloat(y);
+			dataOut.flush();
+		} catch (IOException e) {
+			e.printStackTrace();
+		}
+	}
+	
+	/**
+	 * Sends an x and y as a travel distance to goto. 
+	 */
+	public void sendMapRight(float x, float y) {
+		System.out.println("Communicator sending: MAP LEFT TO " + x + ", " + y);
+		try {
+			dataOut.writeInt(MessageType.MAP.ordinal());
+			dataOut.flush();
+			dataOut.writeFloat(x);
+			dataOut.flush();
+			dataOut.writeFloat(y);
+			dataOut.flush();
+		} catch (IOException e) {
+			e.printStackTrace();
+		}
+	}
+	
 
 	/**
 	 * reads the data input stream, and calls DrawRobotPath() and DrawObstacle()
