@@ -208,12 +208,17 @@ public class OffScreenDrawing extends JPanel {
 	public void drawWall(int xx, int yy) {
 		int x = xpixel(xx);
 		int y = ypixel(yy);
-		if (isDrawWallCalled) {
+		osGraphics.setColor(Color.magenta);
+		osGraphics.fillOval(x, y, 6, 6);
+		/*if (isDrawWallCalled) {
 			osGraphics.setColor(Color.magenta);
 			osGraphics.drawLine(wallPrevX, wallPrevY, x, y);
+			isDrawWallCalled = false;
 		}
 		wallPrevX = x;
 		wallPrevY = y;
+		isDrawWallCalled = true;*/
+		repaint();
 	}
 	
 	public int abs(int a) {
