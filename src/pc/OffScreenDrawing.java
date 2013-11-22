@@ -1,6 +1,10 @@
 package pc;
 
 import java.awt.*;
+import java.awt.event.ActionEvent;
+import java.awt.event.ActionListener;
+
+import javax.swing.JButton;
 import javax.swing.JPanel;
 import javax.swing.JTextField;
 
@@ -11,12 +15,11 @@ import javax.swing.JTextField;
  */
 public class OffScreenDrawing extends JPanel {
 
-	/** Creates new form OffScreenGrid */
+	/** Creates new form OffScreenDrawing */
 	public OffScreenDrawing() {
 		initComponents();
 		setBackground(Color.black);
 		System.out.println(" OffScreen Drawing constructor ");
-		//		makeImage();
 	}
 
 	public void paintComponent(Graphics g) {
@@ -61,7 +64,7 @@ public class OffScreenDrawing extends JPanel {
 		int xmin = -240;
 		int xmax = 240;
 		int xSpacing = 30;
-		int ymax = 240;
+		int ymax = 238;
 		int ySpacing = 30;
 		int count = 0;
 		osGraphics.setColor(Color.green); // Set the line color
@@ -70,8 +73,6 @@ public class OffScreenDrawing extends JPanel {
 			if (count == 1) {
 				y = 12;
 				osGraphics.drawLine(xpixel(xmin), ypixel(y), xpixel(xmax), ypixel(y));
-				osGraphics.setColor(Color.white);
-				osGraphics.drawString(y + "", xpixel(-251f), ypixel(y) + 4);
 				osGraphics.setColor(Color.green);
 			}
 			if (count == 8) {
@@ -79,7 +80,7 @@ public class OffScreenDrawing extends JPanel {
 				BasicStroke dashed = new BasicStroke(3, BasicStroke.CAP_BUTT,
 										BasicStroke .JOIN_BEVEL, 0, new float[]{9}, 0);
 				osGraphics.setStroke(dashed);
-				osGraphics.drawLine(xpixel(xmin), ypixel(y+10), xpixel(xmax), ypixel(y+10));
+				osGraphics.drawLine(xpixel(xmin), ypixel(y+16), xpixel(xmax), ypixel(y+16));
 				osGraphics.setColor(Color.green);
 				osGraphics.setStroke(new BasicStroke());
 				
@@ -87,6 +88,7 @@ public class OffScreenDrawing extends JPanel {
 			osGraphics.drawLine(xpixel(xmin), ypixel(y), xpixel(xmax), ypixel(y));//horizontal lines
 			count++;
 		}
+		count = 0;
 		for (int x = xmin; x <= xmax; x += xSpacing)
 		{
 			osGraphics.drawLine(xpixel(x), ypixel(0), xpixel(x), ypixel(ymax));// vertical lines
@@ -94,13 +96,21 @@ public class OffScreenDrawing extends JPanel {
 		osGraphics.setColor(Color.white); //set number color 	
 		for (int y = 0; y <= ymax; y += ySpacing) // number the  y axis
 		{
+			if (count == 1) {
+				y = 12;
+				osGraphics.drawString(y + "", xpixel(-251f), ypixel(y) + 4);
+			}
+			if (count == 8) {
+				osGraphics.drawString(y+16 + "", xpixel(-251f), ypixel(y+16) + 4);
+			}
 			osGraphics.drawString(y + "", xpixel(-251f), ypixel(y) + 4);
+			count++;
 		}
 		for (int x = xmin; x <= xmax; x +=  xSpacing) // number the x axis
 		{
 			osGraphics.drawString(x + "", xpixel(x) - 4, ypixel(-8f));
 		}
-		drawRobotPath(0, 0, 0);
+		//drawRobotPath(0, 0, 0);
 
 }
 
@@ -121,7 +131,6 @@ public class OffScreenDrawing extends JPanel {
 	public void drawObstacle(int x, int y) {
 		x = xpixel(x); // coordinates of intersection
 		y = ypixel(y);
-		block = true;
 		osGraphics.setColor(Color.magenta);
 		osGraphics.fillOval(x - 3, y - 3, 6, 6);//bounding rectangle is 10 x 10
 		repaint();
@@ -139,18 +148,21 @@ public class OffScreenDrawing extends JPanel {
 	 *blue line connects current robot position to last position if adjacent to current position
 	 */
 	public void drawRobotPath(int xx, int yy, int heading) {
-		
 		int x = xpixel(xx); // coordinates of intersection
 		int y = ypixel(yy);
 		osGraphics.setColor(Color.blue);
-		drawPose(x, y, heading, Color.BLUE);
-		osGraphics.drawLine(robotPrevX, robotPrevY, x, y);
+		drawPose(x, y, heading, Color.orange);
+		if (isRobotPathCalled) {
+			osGraphics.drawLine(robotPrevX, robotPrevY, x, y);
+		}
 		robotPrevX = x;
 		robotPrevY = y;
+		isRobotPathCalled = true;
 		repaint();
+		//drawPose(robotPrevX, robotPrevY, heading, Color.black);
+		//repaint();
 	}
 	
-
 	/**
 	 * clear the old robot position, arg pixels
 	 */
@@ -160,25 +172,18 @@ public class OffScreenDrawing extends JPanel {
 		osGraphics.setColor(Color.white);
 		osGraphics.fillOval(x - 3, y - 3, 6, 6);
 		osGraphics.setColor(c);
-		/*
-		osGraphics.drawLine(x - 5, y, x + 5, y);
-		osGraphics.drawLine(x, y - 5, x, y + 5);
-		*/
 	}
 
 
-	private void drawPose(int x, int y, int heading, Color c) {
-		osGraphics.setColor(Color.WHITE);
-		osGraphics.fillPolygon(poseTriangle);
-
+	public void drawPose(int x, int y, int heading, Color c) {
+		//osGraphics.setColor(Color.black);
+		//osGraphics.fillPolygon(poseTriangle);
 		poseTriangle = new Polygon();
-
 		int newX;
 		int newY;
 		int radius;
 
 		for (int i = 0; i < 3; i++) {
-
 			if (i == 0) {
 				radius = 10;
 			}
@@ -188,15 +193,29 @@ public class OffScreenDrawing extends JPanel {
 			newX = x + (int) (radius * Math.cos(Math.toRadians(heading + (120 * i))));
 			newY = y - (int) (radius * Math.sin(Math.toRadians(heading + (120 * i))));
 
-
 			poseTriangle.addPoint(newX, newY);
 			System.out.println("Point " + i + ": (" + newX + "," + newY + ")");
 		}
-
-		osGraphics.setColor(Color.orange);
+		osGraphics.setColor(c);
 		osGraphics.drawPolygon(poseTriangle);
 	}
-
+	
+	/**
+	 * draws a wall for the map left and right methods.
+	 * @param a
+	 * @return
+	 */
+	public void drawWall(int xx, int yy) {
+		int x = xpixel(xx);
+		int y = ypixel(yy);
+		if (isDrawWallCalled) {
+			osGraphics.setColor(Color.magenta);
+			osGraphics.drawLine(wallPrevX, wallPrevY, x, y);
+		}
+		wallPrevX = x;
+		wallPrevY = y;
+	}
+	
 	public int abs(int a) {
 		return (a < 0 ? (-a) : (a));
 	}
@@ -219,6 +238,7 @@ public class OffScreenDrawing extends JPanel {
 		float y = (yOrigin - ypix)/(1.0f*gridSpacing);
 		return Math.round(y);
 	}
+	
 	/** This method is called from within the constructor to
 	 * initialize the form.
 	 * WARNING: Do NOT modify this code. The content of this method is
@@ -233,15 +253,18 @@ public class OffScreenDrawing extends JPanel {
 				formMouseClicked(evt);
 			}
 		});
-		javax.swing.GroupLayout layout = new javax.swing.GroupLayout(this);
+		
+		FlowLayout layout = new FlowLayout();
 		this.setLayout(layout);
-
+	
+		clearButton = new JButton("Clear");
+		this.add(clearButton);
+		clearButton.addActionListener(new ActionListener() {
+			public void actionPerformed(ActionEvent event) {
+			clear();
+			}
+		});
 	}// </editor-fold>//GEN-END:initComponents
-
-	private void clearBActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_clearBActionPerformed
-
-		clear();
-	}//GEN-LAST:event_clearBActionPerformed
 
 	/**
 	 * Translates a click on the screen to a selection of destination in the text fields.
@@ -257,11 +280,12 @@ public class OffScreenDrawing extends JPanel {
 
 		textX.setText(destXo + "");
 		textY.setText(destYo + "");
+		osGraphics.setColor(Color.yellow);
 		drawDest(destXo, destYo);
 	}//GEN-LAST:event_formMouseClicked
 
 	// Variables declaration - do not modify//GEN-BEGIN:variables
-	private javax.swing.JButton clearB;
+	private JButton clearButton;
 	// End of variables declaration//GEN-END:variables
 	/**
 	 *The robot path is drawn and updated on this object. <br>
@@ -300,13 +324,21 @@ public class OffScreenDrawing extends JPanel {
 	 * robot position; used by checkContinuity, drawRobotPath
 	 */
 	private int robotPrevY = ypixel(0);
+	private int robotPrevHeading;
+	
 	private int destXo = xpixel(0);
 	private int destYo = ypixel(0);
-	/**
-	 * node status - true if blocked; set by drawObstacle, used by drawRobotPath
-	 */
-	private boolean block = false;
+	
+	private int wallPrevX;
+	private int wallPrevY;
+	
 	private Polygon poseTriangle = new Polygon();
+	
 	public JTextField textX;
 	public JTextField textY;
+	
+	public boolean isRobotPathCalled;
+	public boolean isDrawWallCalled;
+	
+	
 }

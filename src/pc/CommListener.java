@@ -1,6 +1,7 @@
 package pc;
 
 import java.awt.BorderLayout;
+import java.awt.Color;
 import java.awt.EventQueue;
 import java.awt.GridLayout;
 import java.awt.Rectangle;
@@ -471,7 +472,8 @@ public class CommListener extends JFrame implements GNC {
 			setMessage("Problem  with Y field");
 			return;
 		}
-		communicator.sendMapLeft(x, y);
+		
+		communicator.sendMapLeft(x, y, 90f);
 		repaint();
 	}
 	
@@ -497,7 +499,7 @@ public class CommListener extends JFrame implements GNC {
 			setMessage("Problem  with Y field");
 			return;
 		}
-		communicator.sendMapRight(x, y);
+		communicator.sendMapRight(x, y, -90f);
 		repaint();
 	}
 	
@@ -570,6 +572,7 @@ public class CommListener extends JFrame implements GNC {
 		oSGrid.drawObstacle(x, y);
 	}
 	public void drawWall(int x, int y) {
-	//	oSGrid.drawWall(x, y);
+		oSGrid.drawWall(x, y);
 	}
+	
 }

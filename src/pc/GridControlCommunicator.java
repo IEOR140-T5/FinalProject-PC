@@ -25,7 +25,7 @@ public class GridControlCommunicator {
 	 */
 	public GridControlCommunicator(CommListener control) {
 		this.control = control; // callback path
-		System.out.println("GridControlCom1 built");
+		System.out.println("GridControlCom built");
 	}
 
 	/**
@@ -176,15 +176,18 @@ public class GridControlCommunicator {
 	/**
 	 * Sends an x and y as a travel distance to goto. 
 	 */
-	public void sendMapLeft(float x, float y) {
+	public void sendMapLeft(float x, float y, float angle) {
 		System.out.println("Communicator sending: MAP LEFT TO " + x + ", " + y);
 		try {
-			dataOut.writeInt(MessageType.MAP.ordinal());
+			dataOut.writeInt(MessageType.SEND_MAP.ordinal());
 			dataOut.flush();
 			dataOut.writeFloat(x);
 			dataOut.flush();
 			dataOut.writeFloat(y);
 			dataOut.flush();
+			dataOut.writeFloat(angle);
+			dataOut.flush();
+			System.out.println("MAP SENT!");
 		} catch (IOException e) {
 			e.printStackTrace();
 		}
@@ -193,14 +196,16 @@ public class GridControlCommunicator {
 	/**
 	 * Sends an x and y as a travel distance to goto. 
 	 */
-	public void sendMapRight(float x, float y) {
-		System.out.println("Communicator sending: MAP LEFT TO " + x + ", " + y);
+	public void sendMapRight(float x, float y, float angle) {
+		System.out.println("Communicator sending: MAP RIGHT TO " + x + ", " + y);
 		try {
-			dataOut.writeInt(MessageType.MAP.ordinal());
+			dataOut.writeInt(MessageType.SEND_MAP.ordinal());
 			dataOut.flush();
 			dataOut.writeFloat(x);
 			dataOut.flush();
 			dataOut.writeFloat(y);
+			dataOut.flush();
+			dataOut.writeFloat(angle);
 			dataOut.flush();
 		} catch (IOException e) {
 			e.printStackTrace();
@@ -229,7 +234,7 @@ public class GridControlCommunicator {
 		 * that position 3) the y coordinate of that position s
 		 */
 		public void run() {
-			System.out.println(" reader started GridControlComm1 ");
+			System.out.println(" reader started GridControlComm ");
 			isRunning = true;
 			float x = 0;
 			float y = 0;
@@ -252,16 +257,23 @@ public class GridControlCommunicator {
 						x = dataIn.readFloat();
 						y = dataIn.readFloat();
 						heading = dataIn.readFloat();
-						System.out.println("  Robot position: " + x + "," + y
-								+ "," + heading);
+						System.out.println("  Robot position: " + x + "," + y + "," + heading);
 						message = x + "," + y + "," + heading;
 						control.drawRobotPath((int) x, (int) y, (int) heading);
+						//control.drawPose((int) x, (int) y, (int) heading);
 						break;
 					case CRASH:
 						message = " CRASHED!!!!";
 						break;
+					case WALL:
+						x = dataIn.readFloat();
+						y = dataIn.readFloat();
+						System.out.println("Begin scanning for wall at: " + x + "," + y);
+						message = "MAP THE WALL!!";
+						control.drawWall((int) x, (int) y);
+						break;
 					}
-
+					
 				} catch (IOException e) {
 					System.out.println("Read Exception in GridControlComm");
 					count++;
