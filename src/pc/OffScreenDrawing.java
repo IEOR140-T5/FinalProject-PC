@@ -128,11 +128,11 @@ public class OffScreenDrawing extends JPanel {
 	/**
 	 *Obstacles shown as magenta dot
 	 */
-	public void drawObstacle(int x, int y) {
+	public void drawBomb(int x, int y) {
 		x = xpixel(x); // coordinates of intersection
 		y = ypixel(y);
-		osGraphics.setColor(Color.magenta);
-		osGraphics.fillOval(x - 3, y - 3, 6, 6);//bounding rectangle is 10 x 10
+		osGraphics.setColor(Color.yellow);
+		osGraphics.fillOval(x, y, 6, 6);//bounding rectangle is 10 x 10
 		repaint();
 	}
 
@@ -150,21 +150,26 @@ public class OffScreenDrawing extends JPanel {
 	public void drawRobotPath(int xx, int yy, int heading) {
 		int x = xpixel(xx); // coordinates of intersection
 		int y = ypixel(yy);
+		
+		drawGrid(); // for redrawing grid lines
 		osGraphics.setColor(Color.blue);
-		drawPose(x, y, heading, Color.orange);
+		drawPose(robotPrevX, robotPrevY, robotPrevHeading, Color.black); // erases old pose
+		repaint();
+		drawPose(x, y, heading, Color.orange); // draws a new pose
+		
 		if (isRobotPathCalled) {
-			osGraphics.drawLine(robotPrevX, robotPrevY, x, y);
+			osGraphics.drawLine(robotPrevX, robotPrevY, x, y); 
 		}
 		robotPrevX = x;
 		robotPrevY = y;
 		isRobotPathCalled = true;
+		robotPrevHeading = heading;
 		repaint();
-		//drawPose(robotPrevX, robotPrevY, heading, Color.black);
-		//repaint();
+		
 	}
 	
 	/**
-	 * clear the old robot position, arg pixels
+	 * clear the old robot position
 	 */
 	private void clearSpot(int x, int y, Color c) {
 		System.out.println("clear spot ");
@@ -174,15 +179,19 @@ public class OffScreenDrawing extends JPanel {
 		osGraphics.setColor(c);
 	}
 
-
+	/**
+	 * draws the pose of the robot as a triangle on the GUI.
+	 * @param x
+	 * @param y
+	 * @param heading
+	 * @param c
+	 */
 	public void drawPose(int x, int y, int heading, Color c) {
-		//osGraphics.setColor(Color.black);
-		//osGraphics.fillPolygon(poseTriangle);
 		poseTriangle = new Polygon();
 		int newX;
 		int newY;
 		int radius;
-
+		robotPrevHeading = heading;
 		for (int i = 0; i < 3; i++) {
 			if (i == 0) {
 				radius = 10;
@@ -329,7 +338,7 @@ public class OffScreenDrawing extends JPanel {
 	 * robot position; used by checkContinuity, drawRobotPath
 	 */
 	private int robotPrevY = ypixel(0);
-	private int robotPrevHeading;
+	private int robotPrevHeading = 0;
 	
 	private int destXo = xpixel(0);
 	private int destYo = ypixel(0);
@@ -344,6 +353,7 @@ public class OffScreenDrawing extends JPanel {
 	
 	public boolean isRobotPathCalled;
 	public boolean isDrawWallCalled;
+	
 	
 	
 }

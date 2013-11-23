@@ -7,6 +7,7 @@ import lejos.pc.comm.*;
 
 /**
  * Communicator on the PC(GUI) side
+ * @author Corey Short, Khoa Tran
  */ 
 public class GridControlCommunicator {
 	
@@ -60,13 +61,11 @@ public class GridControlCommunicator {
 	}
 
 	/**
+	 * Sends the MOVE message to the robot.
 	 * Sends an x and a y to the robot to indicate what point it should travel
 	 * to.
-	 * 
-	 * @param x
-	 *            the x coordinate to travel to
-	 * @param y
-	 *            the y coordinate to travel to
+	 * @param x    the x coordinate to travel to
+	 * @param y    the y coordinate to travel to
 	 */
 	public void sendDestination(float x, float y) {
 		System.out.println("Communicator sending: MOVE TO " + x + ", " + y);
@@ -83,7 +82,7 @@ public class GridControlCommunicator {
 	}
 
 	/**
-	 * Sends STOP message from the GUI to the NXT
+	 * Sends the STOP message from the GUI to the NXT
 	 */
 	public void sendStop() {
 		System.out.println("Communicator sending: STOP");
@@ -96,7 +95,7 @@ public class GridControlCommunicator {
 	}
 
 	/**
-	 * Sends a new pose to the NXT
+	 * Sends the SET_POSE message to the robot.
 	 * @param x - x coordinate of new pose
 	 * @param y - y coordinate of new pose
 	 * @param heading - heading of new pose
@@ -118,6 +117,7 @@ public class GridControlCommunicator {
 	}
 
 	/**
+	 * Sends the FIX_POS message to the robot.
 	 * Sends a FIX_POS to fix the pose to the NXT
 	 */
 	public void sendFix() {
@@ -131,41 +131,14 @@ public class GridControlCommunicator {
 	}
 	
 	/**
+	 * Sends the ECHO message to the robot.
 	 * Sends a ping to the NXT.
 	 */
-	public void sendEcho() {
+	public void sendEcho(float angle) {
 		System.out.println(" Communicator sending: ECHO");
 		try {
 			dataOut.writeInt(MessageType.ECHO.ordinal());
 			dataOut.flush();
-		} catch (IOException e) {
-			e.printStackTrace();
-		}
-	}
-	
-	/**
-	 * Sends a distance to travel to the NXT.
-	 * @param dist - distance to travel
-	 */
-	public void sendTravel(float dist) {
-		System.out.println(" Communicator sending: TRAVEL");
-		try {
-			dataOut.writeInt(MessageType.TRAVEL.ordinal());
-			dataOut.writeFloat(dist);
-			dataOut.flush();
-		} catch (IOException e) {
-			e.printStackTrace();
-		}
-	}
-	
-	/**
-	 * Sends an amount to rotate to the NXT.
-	 * @param angle - amount to rotate
-	 */
-	public void sendRotate(float angle) {
-		System.out.println(" Communicator sending: ROTATE");
-		try {
-			dataOut.writeInt(MessageType.ROTATE.ordinal());
 			dataOut.writeFloat(angle);
 			dataOut.flush();
 		} catch (IOException e) {
@@ -174,6 +147,54 @@ public class GridControlCommunicator {
 	}
 	
 	/**
+	 * Sends the TRAVEL message to the robot.
+	 * Sends a distance to travel to the NXT.
+	 * @param dist - distance to travel
+	 */
+	public void sendTravel(float dist) {
+		System.out.println(" Communicator sending: TRAVEL");
+		try {
+			dataOut.writeInt(MessageType.TRAVEL.ordinal());
+			dataOut.flush();
+			dataOut.writeFloat(dist);
+			dataOut.flush();
+		} catch (IOException e) {
+			e.printStackTrace();
+		}
+	}
+	
+	/**
+	 * Sends the ROTATE message to the robot.
+	 * Sends an amount to rotate to the NXT.
+	 * @param angle - amount to rotate
+	 */
+	public void sendRotate(float angle) {
+		System.out.println(" Communicator sending: ROTATE");
+		try {
+			dataOut.writeInt(MessageType.ROTATE.ordinal());
+			dataOut.flush();
+			dataOut.writeFloat(angle);
+			dataOut.flush();
+		} catch (IOException e) {
+			e.printStackTrace();
+		}
+	}
+	
+	public void sendRotateTo(float angle) {
+		System.out.println("Communicator sending: ROTATE TO");
+		try {
+			dataOut.writeInt(MessageType.ROTATE_TO.ordinal());
+			dataOut.flush();
+			dataOut.writeFloat(angle);
+			dataOut.flush();
+		} catch (IOException e) {
+			e.printStackTrace();
+		}
+	}
+	
+	
+	/**
+	 * Sends the SEND_MAP message to the robot.
 	 * Sends an x and y as a travel distance to goto. 
 	 */
 	public void sendMapLeft(float x, float y, float angle) {
@@ -187,13 +208,13 @@ public class GridControlCommunicator {
 			dataOut.flush();
 			dataOut.writeFloat(angle);
 			dataOut.flush();
-			System.out.println("MAP SENT!");
 		} catch (IOException e) {
 			e.printStackTrace();
 		}
 	}
 	
 	/**
+	 * Sends the SEND_MAP message to the robot. 
 	 * Sends an x and y as a travel distance to goto. 
 	 */
 	public void sendMapRight(float x, float y, float angle) {
@@ -206,6 +227,19 @@ public class GridControlCommunicator {
 			dataOut.writeFloat(y);
 			dataOut.flush();
 			dataOut.writeFloat(angle);
+			dataOut.flush();
+		} catch (IOException e) {
+			e.printStackTrace();
+		}
+	}
+	
+	/**
+	 * sends the EXPLORE message to the robot.
+	 */
+	public void sendMapExplore() {
+		System.out.println("Communicator sending: MAP EXPLORE");
+		try {
+			dataOut.writeInt(MessageType.EXPLORE.ordinal());
 			dataOut.flush();
 		} catch (IOException e) {
 			e.printStackTrace();

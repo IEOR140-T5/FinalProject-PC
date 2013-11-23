@@ -33,7 +33,7 @@ public class CommListener extends JFrame implements GNC {
 	private JLabel lblData, lblPose, lblMoving, lblStatus;
 	private JButton stopButton, setPoseButton, gotoButton, map1Button, map2Button;
 	private JButton fixButton, travelButton, rotateButton, rotateToButton, echoButton;
-	private JButton connectButton, scannerRotateButton;
+	private JButton connectButton, scannerRotateButton, map3Button;
 	
 	private GridControlCommunicator communicator = new GridControlCommunicator(this);
 	private OffScreenDrawing oSGrid = new OffScreenDrawing();
@@ -165,10 +165,6 @@ public class CommListener extends JFrame implements GNC {
 		stopButton.addActionListener(new StopButtonActionListener());
 		enumPanel.setLayout(new FlowLayout(FlowLayout.CENTER, 5, 5));
 		enumPanel.add(stopButton);
-
-		setPoseButton = new JButton("Set Pose");
-		setPoseButton.addActionListener(new SetPoseButtonActionListener());
-		enumPanel.add(setPoseButton);
 		
 		gotoButton = new JButton("GO TO");
 		gotoButton.addActionListener(new GoToButtonActionListener());
@@ -181,6 +177,14 @@ public class CommListener extends JFrame implements GNC {
 		map2Button = new JButton("map right");
 		map2Button.addActionListener(new MapRightButtonActionListener());
 		enumPanel.add(map2Button);
+		
+		map3Button = new JButton("map explore");
+		map3Button.addActionListener(new MapExploreButtonActionListener());
+		enumPanel.add(map3Button);
+		
+		setPoseButton = new JButton("Set Pose");
+		setPoseButton.addActionListener(new SetPoseButtonActionListener());
+		enumPanel.add(setPoseButton);
 		
 		fixButton = new JButton("Fix");
 		fixButton.addActionListener(new FixButtonActionListener());
@@ -198,13 +202,9 @@ public class CommListener extends JFrame implements GNC {
 		rotateToButton.addActionListener(new RotateToButtonActionListener());
 		enumPanel.add(rotateToButton);
 		
-		echoButton = new JButton("Get echo distance");
+		echoButton = new JButton("Get echo");
 		echoButton.addActionListener(new EchoButtonActionListener());
 		enumPanel.add(echoButton);
-		
-		scannerRotateButton = new JButton("Scanner rotate");
-		scannerRotateButton.addActionListener(new ScannerRotateButtonActionListener());
-		enumPanel.add(scannerRotateButton);
 		
 		JPanel statusPanel = new JPanel();
 		topPanel.add(statusPanel);
@@ -315,7 +315,7 @@ public class CommListener extends JFrame implements GNC {
 	 */
 	private class RotateToButtonActionListener implements ActionListener {
 		public void actionPerformed(ActionEvent event) {
-			System.out.println("RotateTo button pressed.");
+			System.out.println("Rotate To button pressed.");
 			sendRotateTo();
 		}
 	}
@@ -333,7 +333,8 @@ public class CommListener extends JFrame implements GNC {
 	}
 	
 	/**
-	 * ActionListener that rotates scanner 90 degrees and draws a map of objects detected on GUI.
+	 * ActionListener that rotates scanner 90 degrees and draws a map of the
+	 * wall detected on GUI.
 	 */
 	private class MapLeftButtonActionListener implements ActionListener {
 		public void actionPerformed(ActionEvent event) {
@@ -343,7 +344,8 @@ public class CommListener extends JFrame implements GNC {
 	}
 	
 	/**
-	 * ActionListener that rotates scanner -90 degrees and draws a map of objects detected on GUI.
+	 * ActionListener that rotates scanner -90 degrees and draws a map of the 
+	 * wall detected on GUI.
 	 */
 	private class MapRightButtonActionListener implements ActionListener {
 		public void actionPerformed(ActionEvent event) {
@@ -351,23 +353,33 @@ public class CommListener extends JFrame implements GNC {
 			sendMapRight();
 		}
 	}
-	
 	/**
-	 * ActionListener that rotates only the scanner an amount. Is used by the echoButton.
+	 * ActionListener that rotates scanner from 90 to -90 and draws a 
+	 * map of the wall detected on the GUI.
 	 */
-	private class ScannerRotateButtonActionListener implements ActionListener {
+	private class MapExploreButtonActionListener implements ActionListener {
 		public void actionPerformed(ActionEvent event) {
-			System.out.println("Scanner rotate button pressed.");
-		//	sendScannerRotate();
+			System.out.println("Map explore button pressed.");
+			sendMapExplore();
 		}
 	}
+	
 	
 	
 	/**
 	 * Sends a ping to the communicator to get an echo distance.
 	 */
 	public void sendEcho() {
-		communicator.sendEcho();
+		float angle = 0;
+		
+		try {
+			angle = Float.parseFloat(amountField.getText());
+			System.out.println(" get angle " + angle);
+		} catch (Exception e) {
+			setMessage("Problem with Angle Field");
+			return;
+		}
+		communicator.sendEcho(angle);
 		repaint();
 	}
 	
@@ -435,7 +447,7 @@ public class CommListener extends JFrame implements GNC {
 	}
 	
 	/**
-	 * sends the stop command to the communicator.
+	 * sends the stop command message to the communicator.
 	 */
 	public void sendStop() {
 		communicator.sendStop();
@@ -451,7 +463,7 @@ public class CommListener extends JFrame implements GNC {
 	}
 	
 	/**
-	 * sends the communicator the map left instruction
+	 * sends the communicator the map left message
 	 */
 	public void sendMapLeft() {
 		float x = 0;
@@ -478,7 +490,7 @@ public class CommListener extends JFrame implements GNC {
 	}
 	
 	/**
-	 * sends the communicator the map right instruction
+	 * sends the communicator the map right message
 	 */
 	public void sendMapRight() {
 		float x = 0;
@@ -500,6 +512,14 @@ public class CommListener extends JFrame implements GNC {
 			return;
 		}
 		communicator.sendMapRight(x, y, -90f);
+		repaint();
+	}
+	
+	/**
+	 * sends the communicator the map explore message
+	 */
+	public void sendMapExplore() {
+		communicator.sendMapExplore();
 		repaint();
 	}
 	
@@ -569,7 +589,7 @@ public class CommListener extends JFrame implements GNC {
 	}
 
 	public void drawObstacle(int x, int y) {
-		oSGrid.drawObstacle(x, y);
+		oSGrid.drawBomb(x, y);
 	}
 	public void drawWall(int x, int y) {
 		oSGrid.drawWall(x, y);
