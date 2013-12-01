@@ -1,6 +1,7 @@
 package pc;
 
 import java.awt.*;
+
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
 
@@ -110,9 +111,7 @@ public class OffScreenDrawing extends JPanel {
 		{
 			osGraphics.drawString(x + "", xpixel(x) - 4, ypixel(-8f));
 		}
-		//drawRobotPath(0, 0, 0);
-
-}
+	}
 
 	/**
 	 *clear the screen and draw a new grid
