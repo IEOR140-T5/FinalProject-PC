@@ -10,7 +10,7 @@ import javax.swing.JPanel;
 import javax.swing.JTextField;
 
 /**
- * OffScreenDrawing draws the grid for the CommListener GUI
+ * OffScreenDrawing draws the grid for the MissionControlGUI GUI
  * @author Corey Short, Phuc Nguyen, Khoa Tran
  *
  */
@@ -130,7 +130,7 @@ public class OffScreenDrawing extends JPanel {
 	public void drawBomb(int x, int y) {
 		x = xpixel(x); // coordinates of intersection
 		y = ypixel(y);
-		osGraphics.setColor(Color.yellow);
+		osGraphics.setColor(Color.darkGray);
 		osGraphics.fillOval(x, y, 6, 6);//bounding rectangle is 10 x 10
 		repaint();
 	}
@@ -213,10 +213,10 @@ public class OffScreenDrawing extends JPanel {
 	 * @param a
 	 * @return
 	 */
-	public void drawWall(int xx, int yy) {
+	public void drawWall(int xx, int yy, Color color) {
 		int x = xpixel(xx);
 		int y = ypixel(yy);
-		osGraphics.setColor(Color.magenta);
+		osGraphics.setColor(color);
 		osGraphics.fillOval(x, y, 6, 6);
 		/*if (isDrawWallCalled) {
 			osGraphics.setColor(Color.magenta);
@@ -229,8 +229,22 @@ public class OffScreenDrawing extends JPanel {
 		repaint();
 	}
 	
+	public void drawStdDev(int xx, int yy) {
+		int x = xpixel(xx);
+		int y = ypixel(yy);
+		osGraphics.setColor(Color.cyan);
+		osGraphics.drawOval(x, y, 6, 6);
+	}
+	
 	public int abs(int a) {
 		return (a < 0 ? (-a) : (a));
+	}
+	
+	public void drawCrash(int xx, int yy) {
+		int x = xpixel(xx);
+		int y = ypixel(yy);
+		osGraphics.setColor(Color.red);
+		osGraphics.drawOval(x, y, 8, 8);
 	}
 
 	/**
