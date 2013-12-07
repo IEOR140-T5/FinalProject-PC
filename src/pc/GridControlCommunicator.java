@@ -34,7 +34,7 @@ public class GridControlCommunicator {
 	/**
 	 * establishes a bluetooth connection to the robot ; needs the robot name
 	 * 
-	 * @param robotName
+	 * @param robotName - our robot's name is t
 	 */
 	public void connect(String robotName) {
 		try {
@@ -66,15 +66,9 @@ public class GridControlCommunicator {
 	}
 	
 	/**
-	 * 
+	 * Sends a message to disconnect the robot from the GUI and close the open streams.
 	 */
 	public void sendDisconnect() {
-		try {
-			connector.close();
-		}
-		catch (Exception e) {
-			System.out.println(e);
-		}
 		System.out.println("Communicator sending: DISCONNECT");
 		try {
 			dataOut.writeInt(MessageType.DISCONNECT.ordinal());
@@ -86,14 +80,14 @@ public class GridControlCommunicator {
 	}
 
 	/**
-	 * Sends the MOVE message to the robot.
+	 * Sends the GOTO message to the robot.
 	 * Sends an x and a y to the robot to indicate what point it should travel
 	 * to.
 	 * @param x    the x coordinate to travel to
 	 * @param y    the y coordinate to travel to
 	 */
-	public void sendDestination(float x, float y) {
-		System.out.println("Communicator sending: MOVE TO " + x + ", " + y);
+	public void sendGoto(float x, float y) {
+		System.out.println("Communicator sending: GOTO " + x + ", " + y);
 		try {
 			dataOut.writeInt(MessageType.GOTO.ordinal());
 			dataOut.flush();
@@ -108,9 +102,23 @@ public class GridControlCommunicator {
 	 * Sends the STOP message from the GUI to the NXT
 	 */
 	public void sendStop() {
-		System.out.println("Communicator sending: STOP");
+		System.out.println("Communicator sending: STOP ");
 		try {
 			dataOut.writeInt(MessageType.STOP.ordinal());
+			dataOut.flush();
+		}
+		catch (IOException e) {
+			e.printStackTrace();
+		}
+	}
+	
+	/**
+	 * Sends the GRAB BOMB message from the GUI to the NXT
+	 */
+	public void sendGrabBomb() {
+		System.out.println("Communicator sending: Grab Bomb ");
+		try {
+			dataOut.writeInt(MessageType.GRAB_BOMB.ordinal());
 			dataOut.flush();
 		}
 		catch (IOException e) {
@@ -250,7 +258,7 @@ public class GridControlCommunicator {
 	}
 	
 	/**
-	 * sends the EXPLORE message to the robot.
+	 * sends the EXPLORE message to the robot. 
 	 */
 	public void sendMapExplore(float angle) {
 		System.out.println("Communicator sending: MAP EXPLORE");
@@ -291,6 +299,9 @@ public class GridControlCommunicator {
 			float x = 0;
 			float y = 0;
 			float heading = 0;
+			float sDevX = 0;
+			float sDevY = 0;
+			float sDevHeading = 0;
 			String message = "";
 			while (isRunning) {
 				try {
@@ -314,6 +325,7 @@ public class GridControlCommunicator {
 											"x: " + x + ", y: " + y + ", h: " + heading;
 						control.drawRobotPath((int) x, (int) y, (int) heading);
 						control.updateCoordList(message);
+						control.updateXAndYDataFields(x, y);
 						break;
 					case CRASH:
 						x = dataIn.readFloat();
@@ -340,15 +352,33 @@ public class GridControlCommunicator {
 						control.drawWall((int) x, (int) y, Color.yellow);
 						control.updateCoordList(message);
 						break;
-					case STD_DEV_RECIEVED:
+					case STD_DEV:
 						x = dataIn.readFloat();
 						y = dataIn.readFloat();
-						System.out.println("Standard deviation is: " + x + "," + y + heading);
-						message = "Standard deviation is:\n" + "x: " + x + ", y: " + y + ", h: " + heading;
-						control.drawStdDev((int) x, (int) y);
+						heading = dataIn.readFloat();
+						sDevX = dataIn.readFloat();
+						sDevY = dataIn.readFloat();
+						sDevHeading = dataIn.readFloat();
+						System.out.println("Standard deviation is: " + "x: " + sDevX + ", y: " + sDevY + ", h: " + sDevHeading);
+						message = "Standard deviation is:\n" + "x: " + sDevX + ", y: " + sDevY + ", h:" + sDevHeading;
+						control.drawStdDev((int) x, (int) y, (int) sDevX, (int) sDevY);
 						control.updateCoordList(message);
+					case GRAB_BOMB:
+						
+						break;
+					case ECHO:
+						x = dataIn.readFloat();
+						y = dataIn.readFloat();
+						System.out.println("Begin scanning for wall at: " + x + "," + y);
+						message = "Mapping:\n" + "x: " + x + ", y: " + y + ", h: " + heading;
+						control.drawWall((int) x, (int) y, Color.cyan);
+						control.updateCoordList(message);
+						break;
+					default:
+						break;
 					}
-				} catch (IOException e) {
+				} 
+				catch (IOException e) {
 					System.out.println("Read Exception in GridControlComm");
 					count++;
 				}

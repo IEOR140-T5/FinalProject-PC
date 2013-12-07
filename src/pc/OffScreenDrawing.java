@@ -1,9 +1,10 @@
 package pc;
 
 import java.awt.*;
-
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
+import java.awt.event.MouseEvent;
+import java.awt.geom.Ellipse2D;
 
 import javax.swing.JButton;
 import javax.swing.JPanel;
@@ -114,7 +115,7 @@ public class OffScreenDrawing extends JPanel {
 	}
 
 	/**
-	 *clear the screen and draw a new grid
+	 * Clears the screen and redraws a new grid.
 	 */
 	public void clear() {
 		System.out.println(" clear called ");
@@ -125,7 +126,7 @@ public class OffScreenDrawing extends JPanel {
 	}
 
 	/**
-	 *Obstacles shown as magenta dot
+	 * Draws the bomb on the GUI after it has been detected and retrieved.
 	 */
 	public void drawBomb(int x, int y) {
 		x = xpixel(x); // coordinates of intersection
@@ -135,21 +136,18 @@ public class OffScreenDrawing extends JPanel {
 		repaint();
 	}
 
-	public void drawDest(int x, int y) {
-		x = xpixel(x); // coordinates of intersection
-		y = ypixel(y);
-		osGraphics.setColor(Color.blue);
-		osGraphics.fillOval(x - 3, y - 3, 6, 6);//bounding rectangle is 10 x 10
-		repaint();
-	}
-
 	/**
-	 *blue line connects current robot position to last position if adjacent to current position
+	 * Draws the robot's path during any movement. It is also responsible for
+	 * drawing the robots pose and painting over its previous pose as the same color
+	 * as the background
+	 * @param xx - the x-coordinate of the robot
+	 * @param yy - the y-coordinate of the robot
+	 * @param heading - the current heading of the robot
 	 */
 	public void drawRobotPath(int xx, int yy, int heading) {
 		int x = xpixel(xx); // coordinates of intersection
 		int y = ypixel(yy);
-		
+	
 		drawGrid(); // for redrawing grid lines
 		osGraphics.setColor(Color.blue);
 		drawPose(robotPrevX, robotPrevY, robotPrevHeading, Color.black); // erases old pose
@@ -164,26 +162,14 @@ public class OffScreenDrawing extends JPanel {
 		isRobotPathCalled = true;
 		robotPrevHeading = heading;
 		repaint();
-		
-	}
-	
-	/**
-	 * clear the old robot position
-	 */
-	private void clearSpot(int x, int y, Color c) {
-		System.out.println("clear spot ");
-		if(osGraphics == null)System.out.println("null osGraphics");
-		osGraphics.setColor(Color.white);
-		osGraphics.fillOval(x - 3, y - 3, 6, 6);
-		osGraphics.setColor(c);
 	}
 
 	/**
-	 * draws the pose of the robot as a triangle on the GUI.
-	 * @param x
-	 * @param y
-	 * @param heading
-	 * @param c
+	 * Draws the pose of the robot as a triangle on the GUI.
+	 * @param x - the x-coordinate of the robot
+	 * @param y - the y-coordinate of the robot
+	 * @param heading - the heading of the robot
+	 * @param c - the color of the pose to be drawn
 	 */
 	public void drawPose(int x, int y, int heading, Color c) {
 		poseTriangle = new Polygon();
@@ -209,60 +195,123 @@ public class OffScreenDrawing extends JPanel {
 	}
 	
 	/**
-	 * draws a wall for the map left and right methods.
-	 * @param a
-	 * @return
+	 * Draws a wall for the map left and map right methods.
+	 * @param xx - the x-coordinate of the wall
+	 * @param yy - the y-coordinate of the wall
+	 * @param color - the color to draw the wall
 	 */
 	public void drawWall(int xx, int yy, Color color) {
 		int x = xpixel(xx);
 		int y = ypixel(yy);
 		osGraphics.setColor(color);
 		osGraphics.fillOval(x, y, 6, 6);
-		/*if (isDrawWallCalled) {
-			osGraphics.setColor(Color.magenta);
-			osGraphics.drawLine(wallPrevX, wallPrevY, x, y);
-			isDrawWallCalled = false;
-		}
-		wallPrevX = x;
-		wallPrevY = y;
-		isDrawWallCalled = true;*/
 		repaint();
 	}
 	
-	public void drawStdDev(int xx, int yy) {
+	/**
+	 * Draws the standard deviation as an ellipse around the pose, x, y.
+	 * @param xx - current pose x
+	 * @param yy - current pose y
+	 * @param devX - current standard deviation of x
+	 * @param devY - current standard deviation of y
+	 */
+	public void drawStdDev(int xx, int yy, int devX, int devY) {
 		int x = xpixel(xx);
 		int y = ypixel(yy);
-		osGraphics.setColor(Color.cyan);
-		osGraphics.drawOval(x, y, 6, 6);
+		int sDevX = xpixel(devX);
+		int sDevY = ypixel(devY);
+		//Ellipse2D ellipse = getEllipseFromCenter(x, y, sDevX, sDevY);
+		osGraphics.setColor(Color.pink);
+		osGraphics.drawOval(x + sDevX, y + sDevY, 10, 10);
 	}
 	
-	public int abs(int a) {
-		return (a < 0 ? (-a) : (a));
+	/**
+	 * Is used to convert Ellipse2D.Float from creating an ellipse starting in the 
+	 * upper left rectangle of x to create an ellipse around center coordinates x and y.
+	 * Used by drawStdDev(x, y, devX, devY).
+	 * @param x - the x coordinate 
+	 * @param y - the y coordinate
+	 * @param width - the width of x
+	 * @param height - the height of y
+	 * @return returns an ellipse created from the center
+	 */
+	private Ellipse2D getEllipseFromCenter(float x, float y, float width, float height) {
+		float newX = (float) (x - width / 2.0);
+		float newY = (float) (y - height / 2.0);
+		Ellipse2D ellipse = new Ellipse2D.Float(newX, newY, width, height);
+		return ellipse;
 	}
 	
+	/**
+	 * Draws the crash of the robot on the GUI as a larger red oval
+	 * @param xx - the x-coordinate of the crash
+	 * @param yy - the y coordinate of the crash
+	 */
 	public void drawCrash(int xx, int yy) {
 		int x = xpixel(xx);
 		int y = ypixel(yy);
 		osGraphics.setColor(Color.red);
 		osGraphics.drawOval(x, y, 8, 8);
 	}
+	
+	/**
+	 * Paints the previous location clicked by the mouse on the GUI as the
+	 * same color as the background.
+	 */
+	private void clearPreviousMouseClicked(int x, int y) {
+		if(osGraphics == null)System.out.println("null osGraphics");
+		osGraphics.setColor(Color.black);
+		osGraphics.fillOval(x - 4, y - 4, 6, 6);
+		drawGrid();
+		repaint(); // redraws grid lines
+	}
+	
+	/**
+	 * Draws an oval of the current destination clicked on the GUI.
+	 * @param x - the x-coordinate clicked on the GUI
+	 * @param y - the y-coordinate clicked on the GUI
+	 */
+	public void drawMouseClicked(int x, int y) {
+		x = xpixel(x);
+		y = ypixel(y);
+		osGraphics.setColor(Color.blue);
+		osGraphics.fillOval(x - 4, y - 4, 6, 6);
+		repaint();
+	}
+	
+	public int abs(int a) {
+		return (a < 0 ? (-a) : (a));
+	}
 
 	/**
-	 *convert grid coordinates to pixels
+	 * Converts float x to pixel x.
+	 * Used by all drawing methods.
+	 * @param x - float x passed in from the robot to be converted to a pixel that
+	 * is represented on the GUI drawing.
+	 * @return the xpixel to be drawn on the GUI
 	 */
 	private int xpixel(float x) {
 		return xOrigin + (int) (x * gridSpacing);
 	}
-
-	private int gridX(int xpix) {
-		float x = (xpix - xOrigin)/(1.0f*gridSpacing);
-		return Math.round(x);
-	}
+	
+	/**
+	 * Converts float y to pixel y.
+	 * Used by all drawing methods.
+	 * @param y - float y passed in from the robot to be converted to a pixel that
+	 * is represented on the GUI drawing.
+	 * @return the ypixel to be drawn on the GUI
+	 */
 	private int ypixel(float y) {
 		return yOrigin - (int) (y * gridSpacing);
 	}
+	
+	private int gridX(int xpix) {
+		float x = (xpix - xOrigin)/(1.0f * gridSpacing);
+		return Math.round(x);
+	}
+	
 	private int gridY(int ypix) {
-		float y = (yOrigin - ypix)/(1.0f*gridSpacing);
+		float y = (yOrigin - ypix)/(1.0f * gridSpacing);
 		return Math.round(y);
 	}
 	
@@ -294,21 +343,21 @@ public class OffScreenDrawing extends JPanel {
 	}// </editor-fold>//GEN-END:initComponents
 
 	/**
-	 * Translates a click on the screen to a selection of destination in the text fields.
-	 * 
-	 * @param evt
+	 * Translates a click on the screen to a selection of destination in the 
+	 * text fields.
+	 * @param event - the event clicked on the GUI
 	 */
-	private void formMouseClicked(java.awt.event.MouseEvent evt)//GEN-FIRST:event_formMouseClicked
+	private void formMouseClicked(MouseEvent event)//GEN-FIRST:event_formMouseClicked
 	{
-		clearSpot(xpixel(destXo), ypixel(destYo), Color.green);
+		clearPreviousMouseClicked(xpixel(destXo), ypixel(destYo));
 
-		destXo = gridX(evt.getX());
-		destYo = gridY(evt.getY());
+		destXo = gridX(event.getX());
+		destYo = gridY(event.getY());
 
 		textX.setText(destXo + "");
 		textY.setText(destYo + "");
-		osGraphics.setColor(Color.yellow);
-		drawDest(destXo, destYo);
+		drawMouseClicked(destXo, destYo);
+		repaint();
 	}//GEN-LAST:event_formMouseClicked
 
 	// Variables declaration - do not modify//GEN-BEGIN:variables
@@ -320,11 +369,11 @@ public class OffScreenDrawing extends JPanel {
 	 */
 	Image offScreenImage;
 	/**
-	 *width of the dawing area;set by makeImage,used by clearImage
+	 *width of the drawing area;set by makeImage,used by clearImage
 	 */
 	int imageWidth;
 	/**
-	 *height of the dawing are; set by  makeImage,used by clearImage
+	 *height of the drawing are; set by  makeImage,used by clearImage
 	 */
 	int imageHeight;
 	/** 
@@ -336,7 +385,7 @@ public class OffScreenDrawing extends JPanel {
 	 */
 	public int yOrigin;
 	/**
-	 * line spacing in  pixels
+	 * the line spacing of the GUI represented as pixels
 	 */
 	public final int gridSpacing = 2;
 	/**
@@ -356,9 +405,6 @@ public class OffScreenDrawing extends JPanel {
 	private int destXo = xpixel(0);
 	private int destYo = ypixel(0);
 	
-	private int wallPrevX;
-	private int wallPrevY;
-	
 	private Polygon poseTriangle = new Polygon();
 	
 	public JTextField textX;
@@ -366,7 +412,5 @@ public class OffScreenDrawing extends JPanel {
 	
 	public boolean isRobotPathCalled;
 	public boolean isDrawWallCalled;
-	
-	
 	
 }

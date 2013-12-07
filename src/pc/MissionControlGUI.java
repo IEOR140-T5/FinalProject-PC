@@ -3,11 +3,12 @@ package pc;
 import java.awt.BorderLayout;
 import java.awt.Color;
 import java.awt.EventQueue;
-import java.awt.Graphics;
 import java.awt.GridLayout;
 import java.awt.Rectangle;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
+import java.awt.event.AdjustmentEvent;
+import java.awt.event.AdjustmentListener;
 
 import javax.swing.BoxLayout;
 import javax.swing.JButton;
@@ -34,14 +35,14 @@ public class MissionControlGUI extends JFrame implements CommListener {
 
 	private JPanel contentPane;
 	private JTextField nameField, xField, yField, xField2, yField2; 
-	private JTextField headingField, movingField, amountField, statusField;
+	private JTextField headingField, echoField, amountField, statusField;
 	private JTextArea statusTextArea;
 	private JScrollPane scrollPane;
 	private JLabel lblX, lblY, lbl2X, lbl2Y, lblAngle, lblHeading;
-	private JLabel lblData, lblPose, lblMoving, lblStatus, lblStatusArea;
+	private JLabel lblData, lblPose, lblEcho, lblStatus, lblStatusArea;
 	private JButton stopButton, setPoseButton, gotoButton, map1Button, map2Button;
 	private JButton fixButton, travelButton, rotateButton, rotateToButton, echoButton;
-	private JButton connectButton, map3Button;
+	private JButton connectButton, map3Button, grabBombButton;
 	
 	private GridControlCommunicator communicator = new GridControlCommunicator(this);
 	private OffScreenDrawing oSGrid = new OffScreenDrawing();
@@ -89,90 +90,71 @@ public class MissionControlGUI extends JFrame implements CommListener {
 		topPanel.add(connectPanel);
 		
 		connectButton = new JButton("Connect");
-		connectButton.setBounds(15, 5, 100, 25);
 		connectButton.addActionListener(new ConnectButtonActionListener());
-		connectPanel.setLayout(null);
+		connectPanel.setLayout(new FlowLayout());
 		connectPanel.add(connectButton);
 
 		nameField = new JTextField();
-		nameField.setBounds(120, 11, 100, 20);
 		nameField.setColumns(10);
 		connectPanel.add(nameField);
 		
-		lblData = new JLabel("Data");
-		lblData.setBounds(245, 0, 60, 15);
+		lblData = new JLabel("Data X");
 		connectPanel.add(lblData);
 
-		lblX = new JLabel("X");
-		lblX.setBounds(245, 20, 15, 15);
-		connectPanel.add(lblX);
-
 		xField = new JTextField();
-		xField.setBounds(260, 20, 30, 15);
-		xField.setColumns(5);
+		xField.setColumns(10);
 		connectPanel.add(xField);
 
-		lblY = new JLabel("Y");
-		lblY.setBounds(300, 20, 15, 15);
+		lblY = new JLabel("Data Y");
 		connectPanel.add(lblY);
 
 		yField = new JTextField();
-		yField.setBounds(315, 20, 30, 15);
-		yField.setColumns(5);
+		yField.setColumns(10);
 		connectPanel.add(yField);
 		
 		lblAngle = new JLabel("Amount");
-		lblAngle.setBounds(355, 20, 50, 15);
 		connectPanel.add(lblAngle);
 		
 		amountField = new JTextField();
-		amountField.setBounds(405, 20, 30, 15);	
 		amountField.setColumns(5);
 		connectPanel.add(amountField);
 		
-		lblPose = new JLabel("Pose");
-		lblPose.setBounds(490, 0, 60, 15);
+		lblPose = new JLabel("Pose X");
 		connectPanel.add(lblPose);
 		
-		lbl2X = new JLabel("X");
-		lbl2X.setBounds(490, 20, 15, 15);
-		connectPanel.add(lbl2X);
 		
 		xField2 = new JTextField();
-		xField2.setBounds(505, 20, 30, 15);
 		xField2.setColumns(5);
 		connectPanel.add(xField2);
 		
-		lbl2Y = new JLabel("Y");
-		lbl2Y.setBounds(545, 20, 15, 15);
+		lbl2Y = new JLabel("Pose Y");
 		connectPanel.add(lbl2Y);
 		
 		yField2 = new JTextField();
-		yField2.setBounds(560, 20, 30, 15);
 		yField2.setColumns(5);
 		connectPanel.add(yField2);
 		
 		lblHeading = new JLabel("Heading");
-		lblHeading.setBounds(600, 20, 50, 15);
 		connectPanel.add(lblHeading);
 		
 		headingField = new JTextField();
-		headingField.setBounds(650, 20, 30, 15);
 		headingField.setColumns(5);
 		connectPanel.add(headingField);
 		
-		lblMoving = new JLabel("Moving");
-		lblMoving.setBounds(690, 20, 50, 15);
-		connectPanel.add(lblMoving);
+		lblEcho = new JLabel("Enter echo");
+		connectPanel.add(lblEcho);
 		
-		movingField = new JTextField();
-		movingField.setBounds(740, 20, 30, 15);
-		movingField.setColumns(5);
-		connectPanel.add(movingField);
+		echoField = new JTextField();
+		echoField.setColumns(5);
+		connectPanel.add(echoField);
 		
 		JPanel enumPanel = new JPanel();
 		topPanel.add(enumPanel);
 
+		grabBombButton = new JButton("Grab Bomb");
+		grabBombButton.addActionListener(new GrabBombButtonActionListener());
+		enumPanel.add(grabBombButton);
+		
 		JButton disconnectButton = new JButton("Disconnect");
 		disconnectButton.addActionListener(new DisconnectButtonActionListener());
 		enumPanel.add(disconnectButton);
@@ -256,8 +238,13 @@ public class MissionControlGUI extends JFrame implements CommListener {
 		
 		scrollPane = new JScrollPane();
 		scrollPane.setBackground(Color.black);
-		scrollPane.setVerticalScrollBarPolicy(ScrollPaneConstants.VERTICAL_SCROLLBAR_ALWAYS);
 		scrollPane.setBorder(new EmptyBorder(10, 0, 50, 20));
+		scrollPane.setVerticalScrollBarPolicy(ScrollPaneConstants.VERTICAL_SCROLLBAR_ALWAYS);
+		scrollPane.getVerticalScrollBar().addAdjustmentListener(new AdjustmentListener() {  
+	        public void adjustmentValueChanged(AdjustmentEvent event) {  
+	            event.getAdjustable().setValue(event.getAdjustable().getMaximum());  
+	        }
+	    });
 		scrollPane.setViewportView(statusTextArea);
 		eastPanel.add(scrollPane);
 		
@@ -300,7 +287,7 @@ public class MissionControlGUI extends JFrame implements CommListener {
 	private class GoToButtonActionListener implements ActionListener {
 		public void actionPerformed(ActionEvent event) {
 			System.out.println("Send button pressed.");
-			sendMove();
+			sendGoto();
 		}
 	}
 	
@@ -325,6 +312,18 @@ public class MissionControlGUI extends JFrame implements CommListener {
 		public void actionPerformed(ActionEvent event) {
 			System.out.println("Echo button pressed.");
 			sendEcho();
+		}
+	}
+	
+	/**
+	 * ActionListener that gets the echo distance to an object.
+	 * @author Short
+	 *
+	 */
+	private class GrabBombButtonActionListener implements ActionListener {
+		public void actionPerformed(ActionEvent event) {
+			System.out.println("Grab bomb button pressed.");
+			sendGrabBomb();
 		}
 	}
 	
@@ -429,7 +428,7 @@ public class MissionControlGUI extends JFrame implements CommListener {
 		float angle = 0;
 		
 		try {
-			angle = Float.parseFloat(amountField.getText());
+			angle = Float.parseFloat(echoField.getText());
 			System.out.println(" get angle " + angle);
 		} catch (Exception e) {
 			setMessage("Problem with Angle Field");
@@ -440,9 +439,17 @@ public class MissionControlGUI extends JFrame implements CommListener {
 	}
 	
 	/**
+	 * Sends a ping to the communicator to get an echo distance.
+	 */
+	public void sendGrabBomb() {
+		communicator.sendGrabBomb();
+		repaint();
+	}
+	
+	/**
 	 * sends the destination to move to the communicator.
 	 */
-	public void sendMove() {
+	public void sendGoto() {
 		float x = 0;
 		float y = 0;
 
@@ -462,7 +469,7 @@ public class MissionControlGUI extends JFrame implements CommListener {
 			return;
 		}
 
-		communicator.sendDestination(x, y);
+		communicator.sendGoto(x, y);
 		repaint();
 	}
 
@@ -659,8 +666,8 @@ public class MissionControlGUI extends JFrame implements CommListener {
 		oSGrid.drawWall(x, y, color);
 	}
 	
-	public void drawStdDev(int x, int y) {
-		oSGrid.drawStdDev(x, y);
+	public void drawStdDev(int x, int y, int sDevX, int sDevY) {
+		oSGrid.drawStdDev(x, y, sDevX, sDevY);
 	}
 	
 	public void drawBomb(int x, int y) {
@@ -669,6 +676,11 @@ public class MissionControlGUI extends JFrame implements CommListener {
 	
 	public void updateCoordList(String message) {
 		statusTextArea.append(message + "\n");
+	}
+	
+	public void updateXAndYDataFields(float x, float y) {
+		xField.setText(Float.toString(x));
+		yField.setText(Float.toString(y));
 	}
 	
 }
